@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProyectaBM - Proyección de Horas y Cálculo de Utilidad</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="app-background"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1>ProyectaBM</h1>
+                    <p class="subtitle">Proyección de Horas de Profesionales GrupoBM</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div id="auth-user-container" class="auth-user-wrap">
+                    <!-- Dynamic auth badge rendered via JS -->
+                </div>
+                <button class="btn btn-secondary" id="btn-manage-profiles" style="display: none;"
+                    onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
+                    <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
+                </button>
+                <button class="btn btn-primary" id="btn-export-csv" style="display: none;">
+                    <i class="fa-solid fa-file-csv"></i> <span class="btn-text">Exportar CSV</span>
+                </button>
+                <button class="btn btn-accent" id="btn-save-projection" style="display: none;">
+                    <i class="fa-solid fa-floppy-disk"></i> <span class="btn-text">Guardar</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- LOGIN GATEKEEPER WALL (UNAUTHENTICATED VISITORS) -->
+        <section id="gatekeeper-view" class="gatekeeper-panel glass-card">
+            <div class="gatekeeper-header">
+                <div class="gatekeeper-icon">
+                    <i class="fa-solid fa-shield-cat"></i>
+                </div>
+                <h2>Acceso Restringido - ProyectaBM bmining</h2>
+                <p class="gatekeeper-subtext">Ingresa tus credenciales institucionales <strong>@bmining.cl</strong> para
+                    validar tus permisos e ingresar a la plataforma de proyección.</p>
+            </div>
+
+            <div class="domain-alert-banner">
+                <i class="fa-solid fa-shield-halved"></i> Validación de permisos activa: Sistema exclusivo para
+                colaboradores <strong>@bmining.cl</strong>
+            </div>
+
+            <!-- Form 1: Gatekeeper Login -->
+            <form id="gk-form-login" class="auth-form">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-envelope"></i> Correo Institucional (@bmining.cl)</label>
+                    <input type="email" id="gk-login-email" class="form-input" placeholder="usuario@bmining.cl"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-key"></i> Contraseña</label>
+                    <input type="password" id="gk-login-password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary full-width" style="margin-top: 0.5rem; padding: 0.8rem;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Validar Permisos e Ingresar
+                </button>
+            </form>
+        </section>
+
+        <!-- MAIN WORKSPACE (ONLY VISIBLE WHEN AUTHENTICATED) -->
+        <main id="app-workspace" style="display: none;">
+            <!-- PROJECT INFO & GLOBAL CONFIG -->
+            <section class="config-panel glass-card">
+                <div class="project-details">
+                    <div class="form-group">
+                        <label for="project-name"><i class="fa-solid fa-folder"></i> Proyecto / Propuesta</label>
+                        <input type="text" id="project-name" class="form-input"
+                            placeholder="Nombre del Proyecto (Opcional)">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-name"><i class="fa-solid fa-building"></i> Cliente / Empresa</label>
+                        <input type="text" id="client-name" class="form-input"
+                            placeholder="Nombre del Cliente (Opcional)">
+                    </div>
+                    <div class="form-group">
+                        <label for="uf-value-input">
+                            <i class="fa-solid fa-bolt"></i> Indicador Valor UF (mindicador.cl)
+                            <span id="uf-date-badge" class="badge badge-emerald">Obteniendo...</span>
+                        </label>
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                            <span style="font-weight:700; color:var(--emerald);">$</span>
+                            <input type="number" id="uf-value-input" class="form-input" value="38850.00" step="0.01"
+                                title="Valor oficial exacto de la UF en Pesos CLP (con decimales)">
+                            <button id="btn-refresh-uf" class="btn btn-secondary"
+                                title="Actualizar UF desde mindicador.cl" style="padding:0.6rem 0.8rem;">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit-scale-select"><i class="fa-solid fa-coins"></i> Escala de Moneda /
+                            Valores</label>
+                        <select id="unit-scale-select" class="form-select">
+                            <option value="1" selected>Pesos ($ CLP)</option>
+                            <option value="1000">Miles de $ (k$ / Miles)</option>
+                            <option value="1000000">Millones de $ (M$ / Millones)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="margin-global-config">
+                    <div class="margin-header">
+                        <span class="config-title"><i class="fa-solid fa-chart-line"></i> Margen de Utilidad Objetivo
+                            (10% - 20%)</span>
+                    </div>
+
+                    <div class="global-slider-container">
+                        <div class="slider-info">
+                            <span>Ajuste Global de Margen:</span>
+                            <span id="global-margin-display" class="badge badge-success">15.0%</span>
+                        </div>
+                        <input type="range" id="global-margin-slider" min="10" max="20" step="0.5" value="15.0"
+                            class="margin-range-slider">
+
+                        <div class="margin-presets">
+                            <button class="preset-btn" data-margin="10.0">10.0% (Mínimo)</button>
+                            <button class="preset-btn" data-margin="12.5">12.5%</button>
+                            <button class="preset-btn active" data-margin="15.0">15.0% (Recomendado)</button>
+                            <button class="preset-btn" data-margin="17.5">17.5%</button>
+                            <button class="preset-btn" data-margin="20.0">20.0% (Máximo)</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI SUMMARY CARDS -->
+            <section class="kpi-grid">
+                <div class="kpi-card glass-card">
+                    <div class="kpi-icon icon-blue"><i class="fa-regular fa-clock"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Total Horas</span>
+                        <h3 id="kpi-total-hours">0.0 hrs</h3>
+                        <span class="kpi-subtext">Sumatoria de horas asignadas</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass-card">
+                    <div class="kpi-icon icon-amber"><i class="fa-solid fa-coins"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Costo Directo Total</span>
+                        <h3 id="kpi-total-cost">$0.00</h3>
+                        <span class="kpi-subtext">Costo total de profesionales</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass-card">
+                    <div class="kpi-icon icon-emerald"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Utilidad Estimada</span>
+                        <h3 id="kpi-total-utility">$0.00</h3>
+                        <span id="kpi-margin-badge" class="badge badge-emerald">Margen Prom: 15.0%</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass-card">
+                    <div class="kpi-icon icon-purple"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <div class="kpi-content">
+                        <span class="kpi-label">Precio Final al Cliente</span>
+                        <h3 id="kpi-total-price">$0.00</h3>
+                        <span class="kpi-subtext">Propuesta Comercial Total</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MAIN TABLE / CORE 4 COLUMNS -->
+            <section class="workspace-panel glass-card">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-table-list"></i> Matriz de Proyección por Profesional</h2>
+                    <div class="workspace-actions">
+                        <button class="btn btn-secondary" id="btn-manage-profiles-workspace"
+                            onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
+                            <i class="fa-solid fa-user-gear"></i> Catálogo Perfiles
+                        </button>
+                        <button class="btn btn-outline" id="btn-clear-items">
+                            <i class="fa-solid fa-trash-can"></i> Limpiar
+                        </button>
+                        <button class="btn btn-primary" id="btn-add-professional">
+                            <i class="fa-solid fa-user-plus"></i> Agregar Profesional
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Desktop Grid / Mobile Cards View Container -->
+                <div class="table-responsive">
+                    <table class="projection-table" id="projection-table">
+                        <thead>
+                            <tr>
+                                <th class="col-num">#</th>
+                                <th class="col-name"><i class="fa-solid fa-user"></i> 1. Nombre del Profesional</th>
+                                <th class="col-profile"><i class="fa-solid fa-id-badge"></i> 2. Perfil de Costo (0.5 -
+                                    2.5 UF/h)</th>
+                                <th class="col-hours"><i class="fa-solid fa-hourglass-half"></i> 3. Cálculo de Horas (UF
+                                    / CLP)</th>
+                                <th class="col-utility"><i class="fa-solid fa-chart-pie"></i> 4. Utilidad (10% - 20%)
+                                </th>
+                                <th class="col-actions">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projection-tbody">
+                            <!-- Dynamic items rendered via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile View Indicator/Card Footer -->
+                <div class="table-footer-summary">
+                    <span id="item-count-label">0 Profesionales en la proyección</span>
+                    <button class="btn btn-primary btn-block-mobile" id="btn-add-professional-mobile">
+                        <i class="fa-solid fa-user-plus"></i> Agregar Profesional
+                    </button>
+                </div>
+            </section>
+
+            <!-- VISUAL ANALYTICS & CHARTS -->
+            <section class="analytics-panel grid-2-col">
+                <div class="glass-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-chart-bar"></i> Distribución de Costos & Utilidad</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="cost-distribution-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fa-solid fa-chart-line"></i> Comparativa de Márgenes de Utilidad</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="margin-comparison-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>ProyectaBM &copy; 2026 - Arquitectura de Software para Proyección de Costos & Horas</p>
+        </footer>
+    </div>
+
+    <!-- MODAL 1: PERFILES DE COSTO -->
+    <div class="modal-backdrop" id="modal-profiles">
+        <div class="modal-box glass-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-gear"></i> Catálogo de Perfiles de Costo</h3>
+                <button class="modal-close" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- CARGA MASIVA EXCEL SECTION -->
+                <div class="excel-upload-box">
+                    <div class="excel-upload-header">
+                        <h4><i class="fa-solid fa-file-excel" style="color:var(--emerald);"></i> Carga Masiva desde
+                            Excel</h4>
+                        <a href="/api/perfiles/template_excel" class="btn btn-outline btn-sm"
+                            title="Descargar Plantilla de Ejemplo (.xlsx)">
+                            <i class="fa-solid fa-download"></i> Plantilla Excel
+                        </a>
+                    </div>
+                    <p class="excel-upload-desc">
+                        Formato esperado: <strong>Profesional</strong> (Col A) | <strong>Perfil</strong> (Col B) |
+                        <strong>Precio Costo</strong> (Col C en UF)
+                    </p>
+
+                    <form id="form-excel-upload" class="excel-upload-form">
+                        <div class="file-drop-zone" id="excel-drop-zone">
+                            <i class="fa-solid fa-cloud-arrow-up excel-icon"></i>
+                            <span id="excel-file-label">Haz clic para seleccionar o arrastra tu archivo Excel aquí
+                                (.xlsx, .csv)</span>
+                            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" style="display:none;">
+                        </div>
+
+                        <div class="excel-options" style="margin: 0.6rem 0;">
+                            <label class="checkbox-label"
+                                style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:var(--text-muted);">
+                                <input type="checkbox" id="chk-auto-import-rows" checked
+                                    style="accent-color:var(--emerald);">
+                                <span>Agregar automáticamente los profesionales importados a la tabla activa</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-emerald full-width" id="btn-submit-excel" disabled>
+                            <i class="fa-solid fa-file-import"></i> Procesar e Importar Excel
+                        </button>
+                    </form>
+                </div>
+
+                <hr class="divider">
+
+                <form id="form-add-profile" class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre del Perfil</label>
+                        <input type="text" id="new-profile-name" class="form-input" placeholder="ej: Arquitecto DevOps"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tarifa de Costo (UF/Hora)</label>
+                        <input type="number" id="new-profile-rate" class="form-input" placeholder="1.5" step="0.1"
+                            min="0.1" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Descripción / Alcance</label>
+                        <input type="text" id="new-profile-desc" class="form-input"
+                            placeholder="Descripción breve del rol">
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">
+                        <i class="fa-solid fa-plus"></i> Guardar Nuevo Perfil Individual
+                    </button>
+                </form>
+
+                <hr class="divider">
+
+                <h4>Perfiles Disponibles</h4>
+                <ul class="profile-list" id="profile-list-container">
+                    <!-- Profile items list -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+            <!-- MODAL 0: AUTENTICACIÓN EXCLUSIVA @bmining.cl -->
+            <div class="modal-backdrop" id="modal-auth">
+                <div class="modal-box glass-card" style="max-width: 480px;">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-user-shield"></i> Acceso ProyectaBM</h3>
+                        <button class="modal-close close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="domain-alert-banner">
+                            <i class="fa-solid fa-shield-halved"></i> Acceso exclusivo para colaboradores
+                            <strong>@bmining.cl</strong>
+                        </div>
+
+                        <!-- Form 1: Login -->
+                        <form id="form-login" class="auth-form">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-envelope"></i> Correo Institucional</label>
+                                <input type="email" id="login-email" class="form-input" placeholder="usuario@bmining.cl"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-key"></i> Contraseña</label>
+                                <input type="password" id="login-password" class="form-input" placeholder="••••••••"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary full-width" style="margin-top: 0.5rem;">
+                                <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary close-modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL POPUP: RESUMEN DE CARGA MASIVA EXCEL -->
+            <div class="modal-backdrop" id="modal-excel-summary">
+                <div class="modal-box glass-card" style="max-width: 580px;">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-file-circle-check" style="color:var(--emerald);"></i> Carga Masiva
+                            Completada</h3>
+                        <button class="modal-close close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <div class="excel-summary-badge-box">
+                            <div class="excel-success-icon">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <h3 id="excel-summary-count-title" style="margin-bottom: 0.3rem;">0 Registros Importados
+                            </h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                Los datos fueron procesados, guardados en el catálogo de perfiles y cargados en tu
+                                matriz de proyección activa.
+                            </p>
+                        </div>
+
+                        <div class="table-responsive"
+                            style="max-height: 240px; margin-top: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                            <table class="projection-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;"><i class="fa-solid fa-user"></i> Profesional</th>
+                                        <th style="text-align: left;"><i class="fa-solid fa-id-badge"></i> Perfil de
+                                            Costo</th>
+                                        <th style="text-align: right;"><i class="fa-solid fa-coins"></i> Tarifa (UF/h)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="excel-summary-tbody">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="justify-content: center;">
+                        <button class="btn btn-emerald close-modal" style="padding: 0.6rem 2rem;">
+                            <i class="fa-solid fa-circle-check"></i> Entendido / Ir a la Matriz
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOAST NOTIFICATION CONTAINER -->
+            <div id="toast-container" class="toast-container"></div>
+
+            <!-- Custom JS -->
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.1.9"></script>
+</body>
+
+</html>
