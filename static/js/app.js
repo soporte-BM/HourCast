@@ -150,13 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (authUserContainer) {
                 authUserContainer.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                    <div class="auth-user-wrap">
                         <div class="user-badge" title="Usuario Institucional Autenticado">
                             <i class="fa-solid fa-user-check"></i>
                             <span><strong>${escapeHtml(state.currentUser.nombre)}</strong> (${escapeHtml(state.currentUser.email)})</span>
                         </div>
-                        <button id="btn-logout" class="btn btn-outline" style="color: #ff6b6b; border-color: rgba(255,107,107,0.4); padding: 0.45rem 0.85rem; font-size: 0.85rem; font-weight: 600;" title="Cerrar Sesión">
-                            <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
+                        <button id="btn-logout" class="btn-logout-danger" title="Cerrar Sesión">
+                            <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar Sesión</span>
                         </button>
                     </div>
                 `;
