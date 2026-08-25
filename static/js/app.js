@@ -160,16 +160,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         </button>
                     </div>
                 `;
+                const doLogout = async () => {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    if (inactivityTimer) clearTimeout(inactivityTimer);
+                    state.currentUser = null;
+                    renderAuthHeader();
+                    showToast('Sesión cerrada correctamente', 'success');
+                };
+
                 const btnLogout = document.getElementById('btn-logout');
-                if (btnLogout) {
-                    btnLogout.addEventListener('click', async () => {
-                        await fetch('/api/auth/logout', { method: 'POST' });
-                        if (inactivityTimer) clearTimeout(inactivityTimer);
-                        state.currentUser = null;
-                        renderAuthHeader();
-                        showToast('Sesión cerrada correctamente', 'success');
-                    });
-                }
+                if (btnLogout) btnLogout.addEventListener('click', doLogout);
+
+                const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
+                if (btnLogoutWorkspace) btnLogoutWorkspace.addEventListener('click', doLogout);
             }
         } else {
             if (inactivityTimer) clearTimeout(inactivityTimer);
