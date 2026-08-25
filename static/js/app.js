@@ -874,6 +874,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (modalProfiles) modalProfiles.classList.remove('active');
         modalExcelSummary.classList.add('active');
+
+        const btnCloseSummary = document.getElementById('btn-close-excel-summary');
+        if (btnCloseSummary) {
+            btnCloseSummary.onclick = function() {
+                modalExcelSummary.classList.remove('active');
+            };
+        }
     }
 
         // Add professional buttons
