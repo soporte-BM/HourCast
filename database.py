@@ -97,14 +97,42 @@ def init_db():
         )
     ''')
 
-    # Cleanup legacy perfiles with rate > 10.0 UF if any exist
-    cursor.execute('SELECT MAX(tarifa_costo) FROM perfiles')
-    max_rate = cursor.fetchone()[0]
-    if max_rate is not None and max_rate > 10.0:
-        cursor.execute('DELETE FROM perfiles')
+    # Table for Audit Logs (Historial de Auditoría de Sesiones y Tareas)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS auditoria_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_email TEXT NOT NULL,
+            usuario_nombre TEXT,
+            accion TEXT NOT NULL,
+            detalles TEXT,
+            ip_address TEXT,
+            fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     
     conn.commit()
     conn.close()
+
+def log_activity(email, nombre, accion, detalles=None, ip_address=None):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            'INSERT INTO auditoria_logs (usuario_email, usuario_nombre, accion, detalles, ip_address) VALUES (?, ?, ?, ?, ?)',
+            (email, nombre, accion, detalles, ip_address)
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error registrando log de auditoría: {e}")
+
+def get_audit_logs(limit=100):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM auditoria_logs ORDER BY id DESC LIMIT ?', (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
 
 def get_perfiles():
     conn = get_connection()

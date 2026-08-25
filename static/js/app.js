@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modals
     const modalProfiles = document.getElementById('modal-profiles');
     const modalAuth = document.getElementById('modal-auth');
+    const modalLogs = document.getElementById('modal-logs');
+    const btnViewLogs = document.getElementById('btn-view-logs');
     const profileListContainer = document.getElementById('profile-list-container');
     const formAddProfile = document.getElementById('form-add-profile');
 
@@ -201,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (appWorkspace) appWorkspace.style.display = 'block';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'inline-flex';
+            if (btnViewLogs) btnViewLogs.style.display = 'inline-flex';
             if (btnExportCsv) btnExportCsv.style.display = 'inline-flex';
             if (btnSaveProjection) btnSaveProjection.style.display = 'inline-flex';
 
@@ -225,10 +228,46 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnHeaderLogout) btnHeaderLogout.style.display = 'none';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'none';
+            if (btnViewLogs) btnViewLogs.style.display = 'none';
             if (btnExportCsv) btnExportCsv.style.display = 'none';
             if (btnSaveProjection) btnSaveProjection.style.display = 'none';
 
             if (authUserContainer) authUserContainer.innerHTML = '';
+        }
+    }
+
+    async function loadAuditLogs() {
+        const tbodyLogs = document.getElementById('audit-logs-tbody');
+        if (!tbodyLogs) return;
+        tbodyLogs.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Cargando registro de auditoría...</td></tr>';
+        try {
+            const res = await fetch('/api/logs');
+            const data = await res.json();
+            if (data.status === 'success' && data.data && data.data.length > 0) {
+                let html = '';
+                data.data.forEach(log => {
+                    let badgeClass = 'badge-cyan';
+                    if (log.accion === 'INICIO_SESION') badgeClass = 'badge-emerald';
+                    else if (log.accion === 'CIERRE_SESION') badgeClass = 'badge-amber';
+                    else if (log.accion === 'GUARDAR_PROYECCION') badgeClass = 'badge-cyan';
+                    else if (log.accion === 'CREAR_PERFIL' || log.accion === 'CARGA_MASIVA_EXCEL') badgeClass = 'badge-purple';
+
+                    const dateStr = log.fecha_registro ? log.fecha_registro.replace('T', ' ').substring(0, 19) : '-';
+                    html += `
+                        <tr>
+                            <td><span style="font-size:0.78rem; color:var(--text-muted);">${escapeHtml(dateStr)}</span></td>
+                            <td><strong>${escapeHtml(log.usuario_nombre || 'Usuario')}</strong><br><span style="font-size:0.75rem; color:var(--text-dim);">${escapeHtml(log.usuario_email || '')}</span></td>
+                            <td><span class="badge ${badgeClass}">${escapeHtml(log.accion)}</span></td>
+                            <td><span style="font-size:0.82rem; color:var(--text-main);">${escapeHtml(log.detalles || '')}</span></td>
+                        </tr>
+                    `;
+                });
+                tbodyLogs.innerHTML = html;
+            } else {
+                tbodyLogs.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No hay registros de auditoría aún.</td></tr>';
+            }
+        } catch (err) {
+            tbodyLogs.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--rose); padding:1.5rem;">Error al obtener el historial de auditoría.</td></tr>';
         }
     }
 
@@ -1050,6 +1089,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnManageProfiles) {
             btnManageProfiles.addEventListener('click', () => {
                 if (modalProfiles) modalProfiles.classList.add('active');
+            });
+        }
+        if (btnViewLogs) {
+            btnViewLogs.addEventListener('click', () => {
+                if (modalLogs) modalLogs.classList.add('active');
+                loadAuditLogs();
             });
         }
 

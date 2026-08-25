@@ -18,6 +18,14 @@ ALLOWED_DOMAIN = "@bmining.cl"
 def is_valid_bmining_email(email):
     return bool(email and email.lower().strip().endswith(ALLOWED_DOMAIN))
 
+def get_current_user_info():
+    user_id = session.get('user_id')
+    if user_id:
+        user = database.get_user_by_id(user_id)
+        if user:
+            return user.get('email', 'Anónimo'), user.get('nombre', 'Usuario')
+    return 'Sistema', 'Invitado'
+
 # Initialize database tables and seed data
 database.init_db()
 
@@ -95,12 +103,23 @@ def api_auth_login():
     session.permanent = True
     session['user_id'] = user['id']
     user_info = {"id": user['id'], "nombre": user['nombre'], "email": user['email']}
+    database.log_activity(user['email'], user['nombre'], 'INICIO_SESION', 'Inicio de sesión exitoso', request.remote_addr)
     return jsonify({"status": "success", "message": "Inicio de sesión exitoso", "user": user_info})
 
 @app.route('/api/auth/logout', methods=['POST'])
 def api_auth_logout():
+    user_id = session.get('user_id')
+    if user_id:
+        u = database.get_user_by_id(user_id)
+        if u:
+            database.log_activity(u['email'], u['nombre'], 'CIERRE_SESION', 'Cierre de sesión manual', request.remote_addr)
     session.pop('user_id', None)
     return jsonify({"status": "success", "message": "Sesión cerrada correctamente"})
+
+@app.route('/api/logs', methods=['GET'])
+def api_get_logs():
+    logs = database.get_audit_logs(limit=100)
+    return jsonify({"status": "success", "data": logs})
 
 # Endpoint to fetch live UF from mindicador.cl/api
 @app.route('/api/uf', methods=['GET'])
@@ -162,6 +181,8 @@ def api_add_perfil():
         
     try:
         new_id = database.add_perfil(nombre, tarifa, descripcion)
+        u_email, u_nombre = get_current_user_info()
+        database.log_activity(u_email, u_nombre, 'CREAR_PERFIL', f'Registró perfil "{nombre}" con tarifa {tarifa} UF/h', request.remote_addr)
         return jsonify({"status": "success", "id": new_id, "message": "Perfil registrado exitosamente"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"Error al guardar perfil: {str(e)}"}), 500
@@ -294,6 +315,9 @@ def api_upload_excel_perfiles():
                         "tarifa_costo": tarifa_costo
                     })
 
+        u_email, u_nombre = get_current_user_info()
+        database.log_activity(u_email, u_nombre, 'CARGA_MASIVA_EXCEL', f'Procesó archivo Excel e importó {len(imported_items)} registros', request.remote_addr)
+
         return jsonify({
             "status": "success",
             "message": f"Se importaron {len(imported_items)} registros exitosamente",
@@ -340,6 +364,8 @@ def api_save_proyeccion():
             items_data=items,
             proyeccion_id=proyeccion_id
         )
+        u_email, u_nombre = get_current_user_info()
+        database.log_activity(u_email, u_nombre, 'GUARDAR_PROYECCION', f'Guardó proyección ID {saved_id} ("{nombre_proyecto}") con {len(items)} profesionales', request.remote_addr)
         return jsonify({"status": "success", "id": saved_id, "message": "Proyección guardada correctamente"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"Error al guardar: {str(e)}"}), 500
@@ -361,6 +387,9 @@ def api_export_csv():
     modo_margen = data.get('modo_margen', 'costo')
     unidad_escala = float(data.get('unidad_escala', 1.0))
     
+    u_email, u_nombre = get_current_user_info()
+    database.log_activity(u_email, u_nombre, 'EXPORTAR_CSV', f'Exportó reporte de proyección ({len(items)} filas) a CSV', request.remote_addr)
+
     unit_str = "Normal ($)" if unidad_escala == 1 else ("Miles ($k)" if unidad_escala == 1000 else "Millones ($M)")
     
     output = io.StringIO()
