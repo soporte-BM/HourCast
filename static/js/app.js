@@ -134,6 +134,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { passive: true });
     });
 
+    function initThemeSystem() {
+        const savedTheme = localStorage.getItem('proyectabm_theme') || 'dark';
+        applyTheme(savedTheme);
+
+        const btnToggle = document.getElementById('btn-theme-toggle');
+        const dropdown = document.getElementById('theme-dropdown');
+        const themeOptions = document.querySelectorAll('.theme-option');
+
+        if (btnToggle && dropdown) {
+            btnToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+            });
+
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('active');
+            });
+        }
+
+        themeOptions.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const selectedTheme = opt.getAttribute('data-theme');
+                applyTheme(selectedTheme);
+                if (dropdown) dropdown.classList.remove('active');
+                const names = { dark: 'Oscuro', light: 'Claro', sepia: 'Sepia' };
+                showToast(`Tema cambiado a ${names[selectedTheme] || selectedTheme}`, 'info');
+            });
+        });
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('proyectabm_theme', theme);
+
+        const label = document.getElementById('theme-label');
+        const themeOptions = document.querySelectorAll('.theme-option');
+
+        const names = { dark: 'Oscuro', light: 'Claro', sepia: 'Sepia' };
+
+        if (label) {
+            label.textContent = names[theme] || 'Oscuro';
+        }
+
+        themeOptions.forEach(opt => {
+            if (opt.getAttribute('data-theme') === theme) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+    }
+
+    // Initialize Theme Immediately on load
+    initThemeSystem();
+
     function renderAuthHeader() {
         if (state.currentUser) {
             resetInactivityTimer();

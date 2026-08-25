@@ -39,6 +39,24 @@
             </div>
 
             <div class="header-actions">
+                <!-- Theme Switcher Selector -->
+                <div class="theme-switcher-container">
+                    <button class="btn btn-outline" id="btn-theme-toggle" title="Cambiar Tema (Oscuro / Claro / Sepia)">
+                        <i class="fa-solid fa-palette"></i> <span id="theme-label">Oscuro</span>
+                    </button>
+                    <div class="theme-dropdown glass-card" id="theme-dropdown">
+                        <button class="theme-option active" data-theme="dark">
+                            <i class="fa-solid fa-moon" style="color:#06b6d4;"></i> Oscuro
+                        </button>
+                        <button class="theme-option" data-theme="light">
+                            <i class="fa-solid fa-sun" style="color:#f59e0b;"></i> Claro
+                        </button>
+                        <button class="theme-option" data-theme="sepia">
+                            <i class="fa-solid fa-mug-hot" style="color:#b58900;"></i> Sepia
+                        </button>
+                    </div>
+                </div>
+
                 <div id="auth-user-container" class="auth-user-wrap">
                     <!-- Dynamic auth badge rendered via JS -->
                 </div>
@@ -442,7 +460,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.2.6"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.3.0"></script>
 </body>
 
 </html>

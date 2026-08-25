@@ -45,6 +45,159 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+    --bg-dark: #f1f5f9;
+    --bg-surface: rgba(255, 255, 255, 0.85);
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-card-hover: rgba(241, 245, 249, 1);
+    --border-glass: rgba(0, 0, 0, 0.12);
+    --border-accent: rgba(6, 182, 212, 0.5);
+
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --text-dim: #64748b;
+
+    --shadow-glass: 0 10px 25px -5px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .app-background {
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.12), transparent 45%),
+        #f8fafc;
+}
+
+[data-theme="light"] h1, 
+[data-theme="light"] h2, 
+[data-theme="light"] h3, 
+[data-theme="light"] h4 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .brand h1 {
+    background: linear-gradient(to right, #0f172a, #0284c7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .table-input {
+    background: rgba(241, 245, 249, 0.9);
+    border-color: rgba(203, 213, 225, 0.9);
+    color: #0f172a;
+}
+
+[data-theme="light"] .form-input, 
+[data-theme="light"] .form-select {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+/* SEPIA THEME */
+[data-theme="sepia"] {
+    --bg-dark: #f4ecd8;
+    --bg-surface: rgba(247, 241, 227, 0.9);
+    --bg-card: rgba(253, 246, 227, 0.95);
+    --bg-card-hover: rgba(238, 232, 213, 1);
+    --border-glass: rgba(181, 137, 0, 0.22);
+    --border-accent: rgba(181, 137, 0, 0.5);
+
+    --text-main: #433422;
+    --text-muted: #705b42;
+    --text-dim: #8b7355;
+
+    --shadow-glass: 0 10px 25px -5px rgba(88, 65, 34, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="sepia"] .app-background {
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(181, 137, 0, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(203, 75, 22, 0.1), transparent 45%),
+        #f4ecd8;
+}
+
+[data-theme="sepia"] h1, 
+[data-theme="sepia"] h2, 
+[data-theme="sepia"] h3, 
+[data-theme="sepia"] h4 {
+    color: #433422;
+}
+
+[data-theme="sepia"] .brand h1 {
+    background: linear-gradient(to right, #433422, #b58900);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+[data-theme="sepia"] .table-input {
+    background: rgba(238, 232, 213, 0.9);
+    border-color: rgba(211, 198, 170, 0.9);
+    color: #433422;
+}
+
+[data-theme="sepia"] .form-input, 
+[data-theme="sepia"] .form-select {
+    background: #fdf6e3;
+    border-color: #d3c6aa;
+    color: #433422;
+}
+
+/* Theme Switcher Widget */
+.theme-switcher-container {
+    position: relative;
+    display: inline-block;
+}
+
+.theme-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 130px;
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+}
+
+.theme-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+}
+
+.theme-option:hover {
+    background: var(--bg-card-hover);
+}
+
+.theme-option.active {
+    background: rgba(6, 182, 212, 0.18);
+    color: var(--primary);
+    font-weight: 700;
 }
 
 .app-background {
