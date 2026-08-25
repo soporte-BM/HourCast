@@ -28,17 +28,31 @@ def init_db():
     ''')
 
     # Seed default @bmining.cl users if empty
+    import werkzeug.security
     cursor.execute('SELECT COUNT(*) FROM usuarios')
     if cursor.fetchone()[0] == 0:
-        import werkzeug.security
         default_users = [
             ("Daniel Mesa", "daniel.mesa@bmining.cl", werkzeug.security.generate_password_hash("bmining_pass_123")),
-            ("Rodrigo Poblete", "rodrigo.poblete@bmining.cl", werkzeug.security.generate_password_hash("bmining_pass_123"))
+            ("Patricio Fernández", "patricio.fernandez@bmining.cl", werkzeug.security.generate_password_hash("GrupoBM##2026"))
         ]
         cursor.executemany(
             'INSERT INTO usuarios (nombre, email, password_hash) VALUES (?, ?, ?)',
             default_users
         )
+    else:
+        cursor.execute('SELECT id FROM usuarios WHERE LOWER(email) = ?', ('patricio.fernandez@bmining.cl',))
+        pf_user = cursor.fetchone()
+        pf_hash = werkzeug.security.generate_password_hash("GrupoBM##2026")
+        if not pf_user:
+            cursor.execute(
+                'INSERT INTO usuarios (nombre, email, password_hash) VALUES (?, ?, ?)',
+                ("Patricio Fernández", "patricio.fernandez@bmining.cl", pf_hash)
+            )
+        else:
+            cursor.execute(
+                'UPDATE usuarios SET password_hash = ? WHERE id = ?',
+                (pf_hash, pf_user[0])
+            )
 
     # Table for Cost Profiles (Catálogo de Perfiles de Costo)
     cursor.execute('''
