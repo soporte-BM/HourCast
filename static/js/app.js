@@ -985,9 +985,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Modal close buttons
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (modalProfiles) modalProfiles.classList.remove('active');
+        document.querySelectorAll('.close-modal, .modal-close').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const backdrop = btn.closest('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.classList.remove('active');
+                } else {
+                    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+                }
             });
         });
 
