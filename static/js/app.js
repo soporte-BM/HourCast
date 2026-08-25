@@ -148,37 +148,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnExportCsv) btnExportCsv.style.display = 'inline-flex';
             if (btnSaveProjection) btnSaveProjection.style.display = 'inline-flex';
 
+            const btnHeaderLogout = document.getElementById('btn-logout');
+            if (btnHeaderLogout) btnHeaderLogout.style.display = 'inline-flex';
+
             if (authUserContainer) {
                 authUserContainer.innerHTML = `
-                    <div class="auth-user-wrap">
-                        <div class="user-badge" title="Usuario Institucional Autenticado">
-                            <i class="fa-solid fa-user-check"></i>
-                            <span><strong>${escapeHtml(state.currentUser.nombre)}</strong> (${escapeHtml(state.currentUser.email)})</span>
-                        </div>
-                        <button id="btn-logout" class="btn-logout-danger" title="Cerrar Sesión">
-                            <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar Sesión</span>
-                        </button>
+                    <div class="user-badge" title="Usuario Institucional Autenticado">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span><strong>${escapeHtml(state.currentUser.nombre)}</strong> (${escapeHtml(state.currentUser.email)})</span>
                     </div>
                 `;
-                const doLogout = async () => {
-                    await fetch('/api/auth/logout', { method: 'POST' });
-                    if (inactivityTimer) clearTimeout(inactivityTimer);
-                    state.currentUser = null;
-                    renderAuthHeader();
-                    showToast('Sesión cerrada correctamente', 'success');
-                };
-
-                const btnLogout = document.getElementById('btn-logout');
-                if (btnLogout) btnLogout.addEventListener('click', doLogout);
-
-                const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
-                if (btnLogoutWorkspace) btnLogoutWorkspace.addEventListener('click', doLogout);
             }
         } else {
             if (inactivityTimer) clearTimeout(inactivityTimer);
             // HIDE WORKSPACE & SHOW LOGIN WALL (ACCESS CONTROL GATEKEEPER)
             if (gatekeeperView) gatekeeperView.style.display = 'block';
             if (appWorkspace) appWorkspace.style.display = 'none';
+
+            const btnHeaderLogout = document.getElementById('btn-logout');
+            if (btnHeaderLogout) btnHeaderLogout.style.display = 'none';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'none';
             if (btnExportCsv) btnExportCsv.style.display = 'none';
@@ -982,6 +970,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Error de servidor al guardar proyección', 'error');
             }
         });
+
+        // Logout buttons
+        const doLogout = async () => {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            state.currentUser = null;
+            renderAuthHeader();
+            showToast('Sesión cerrada correctamente', 'success');
+        };
+        const btnHeaderLogout = document.getElementById('btn-logout');
+        if (btnHeaderLogout) btnHeaderLogout.addEventListener('click', doLogout);
+        const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
+        if (btnLogoutWorkspace) btnLogoutWorkspace.addEventListener('click', doLogout);
 
         // Modal triggers
         const btnManageProfilesWorkspace = document.getElementById('btn-manage-profiles-workspace');

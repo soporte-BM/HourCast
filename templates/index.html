@@ -26,6 +26,9 @@
         <!-- HEADER -->
         <header class="app-header">
             <div class="brand">
+                <button id="btn-logout" class="btn-logout-danger" style="display: none; margin-right: 0.5rem;" title="Cerrar Sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar Sesión</span>
+                </button>
                 <div class="brand-icon">
                     <i class="fa-solid fa-calculator"></i>
                 </div>
@@ -439,7 +442,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.2.5"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.2.6"></script>
 </body>
 
 </html>
