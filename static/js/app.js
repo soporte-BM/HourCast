@@ -137,6 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAuthHeader() {
         if (state.currentUser) {
             resetInactivityTimer();
+            // Auto fetch UF live value upon successful login or session restore
+            fetchLiveUF();
+
             // SHOW WORKSPACE & HIDE LOGIN WALL
             if (gatekeeperView) gatekeeperView.style.display = 'none';
             if (appWorkspace) appWorkspace.style.display = 'block';
@@ -722,6 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         state.currentUser = data.user;
                         renderAuthHeader();
                         gkFormLogin.reset();
+                        await fetchLiveUF();
                         showToast(`Permisos validados. ¡Bienvenido(a) ${data.user.nombre}!`, 'success');
                     } else {
                         showToast(data.message || 'Error al validar credenciales', 'error');
