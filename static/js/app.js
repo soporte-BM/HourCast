@@ -1075,8 +1075,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (inactivityTimer) clearTimeout(inactivityTimer);
             state.currentUser = null;
-            renderAuthHeader();
-            showToast('Sesión cerrada correctamente', 'success');
+            window.location.href = '/';
         };
         window.doLogout = doLogout;
 
