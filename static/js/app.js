@@ -1102,6 +1102,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const btnCloseModalProfiles = document.getElementById('btn-close-modal-profiles');
+        if (btnCloseModalProfiles) {
+            btnCloseModalProfiles.onclick = function() {
+                if (modalProfiles) modalProfiles.classList.remove('active');
+            };
+        }
+
         // Modal close buttons
         document.querySelectorAll('.close-modal, .modal-close').forEach(btn => {
             btn.addEventListener('click', (e) => {
