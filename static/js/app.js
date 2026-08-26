@@ -18,10 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { nombre: "Rodrigo Poblete", perfil: "Consultor Senior", tarifa: 1.8 },
             { nombre: "Catalina Olivares", perfil: "Ingeniero Especialista", tarifa: 0.7 },
             { nombre: "Juan Pedreros", perfil: "Ingeniero Senior", tarifa: 1.1 },
-            { nombre: "Amilcar Chavez", perfil: "Ingeniero", tarifa: 0.5 },
-            { nombre: "Daniel Mesa", perfil: "Arquitecto de Software", tarifa: 1.8 },
-            { nombre: "Carlos Gutiérrez", perfil: "Senior Developer", tarifa: 1.3 },
-            { nombre: "Andrea Morales", perfil: "Project Manager (PM)", tarifa: 1.5 }
+            { nombre: "Amilcar Chavez", perfil: "Ingeniero", tarifa: 0.5 }
         ]
     };
 
