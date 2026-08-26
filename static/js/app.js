@@ -576,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="col-utility">
                     <div class="utility-box">
                         <div class="row-margin-slider-wrap">
-                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="20" step="0.5" value="${item.margen_porcentaje}">
+                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="20" step="0.1" value="${item.margen_porcentaje}">
                             <span class="row-margin-val">${item.margen_porcentaje.toFixed(1)}%</span>
                         </div>
                         <div class="utility-result-line">
