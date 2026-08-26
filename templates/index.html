@@ -64,7 +64,7 @@
                     onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
                     <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
                 </button>
-                <button class="btn btn-outline" id="btn-logout-workspace" style="color: #ff6b6b; border-color: rgba(255,107,107,0.4); display: none;" title="Cerrar Sesión">
+                <button class="btn" id="btn-logout-workspace" title="Cerrar Sesión" style="background-color: #dc2626; color: #ffffff; font-weight: 700; border: none; padding: 0.55rem 1.1rem; border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 8px rgba(220,38,38,0.35);">
                     <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
                 </button>
                 <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría">
@@ -498,7 +498,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.5"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.6"></script>
 </body>
 
 </html>

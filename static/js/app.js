@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btnHeaderLogout = document.getElementById('btn-logout');
             if (btnHeaderLogout) btnHeaderLogout.style.display = 'none';
             const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
-            if (btnLogoutWorkspace) btnLogoutWorkspace.style.display = 'none';
+            if (btnLogoutWorkspace) btnLogoutWorkspace.style.display = 'inline-flex';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'inline-flex';
             if (btnViewLogs) btnViewLogs.style.display = 'none';
