@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalAuth = document.getElementById('modal-auth');
     const modalLogs = document.getElementById('modal-logs');
     const btnViewLogs = document.getElementById('btn-view-logs');
+    const btnManageProfiles = document.getElementById('btn-manage-profiles');
+    const btnLogoutHeader = document.getElementById('btn-logout-header');
     const profileListContainer = document.getElementById('profile-list-container');
     const formAddProfile = document.getElementById('form-add-profile');
 
