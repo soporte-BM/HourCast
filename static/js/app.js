@@ -225,9 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (appWorkspace) appWorkspace.style.display = 'none';
 
             const btnLogoutHeader = document.getElementById('btn-logout-header');
-            if (btnLogoutHeader) btnLogoutHeader.style.display = 'inline-flex';
+            if (btnLogoutHeader) btnLogoutHeader.style.display = 'none';
 
-            if (btnManageProfiles) btnManageProfiles.style.display = 'inline-flex';
+            if (btnManageProfiles) btnManageProfiles.style.display = 'none';
             if (btnViewLogs) btnViewLogs.style.display = 'none';
             if (btnExportCsv) btnExportCsv.style.display = 'none';
             if (btnSaveProjection) btnSaveProjection.style.display = 'none';
