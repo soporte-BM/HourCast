@@ -846,6 +846,26 @@ input:checked + .slider-toggle:before {
 .col-utility { min-width: 220px; }
 .col-actions { width: 80px; text-align: center; }
 
+.btn-icon-danger {
+    background: rgba(244, 63, 94, 0.15);
+    color: var(--rose);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-icon-danger:hover {
+    background: var(--rose);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+}
+
 /* Table Inputs & Sub-calculations */
 .prof-input-wrap {
     display: flex;
@@ -1497,16 +1517,114 @@ input:checked + .slider-toggle:before {
         padding: 0.45rem 0.6rem;
     }
 
-    /* Mobile Table Touch Targets & Scroll */
+    /* Mobile Table Touch Targets & Card Layout */
     .table-responsive {
         border-radius: var(--radius-sm);
-        border: 1px solid var(--border-glass);
-        -webkit-overflow-scrolling: touch;
+        border: none;
+        background: transparent;
     }
 
-    .projection-table th,
+    .projection-table, 
+    .projection-table tbody, 
+    .projection-table tr, 
     .projection-table td {
-        padding: 0.6rem 0.5rem;
+        display: block;
+        width: 100%;
+    }
+
+    .projection-table thead {
+        display: none;
+    }
+
+    .projection-table tr {
+        background: rgba(22, 27, 38, 0.75);
+        border: 1px solid var(--border-glass);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+        padding: 1rem;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .projection-table td {
+        padding: 0.4rem 0;
+        border-bottom: none;
+        background: transparent !important;
+        position: static;
+    }
+
+    .projection-table td.col-num {
+        display: inline-block;
+        width: auto;
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 0.82rem;
+        margin-bottom: 0.4rem;
+        background: rgba(6, 182, 212, 0.15) !important;
+        padding: 0.2rem 0.6rem !important;
+        border-radius: 20px;
+    }
+
+    .projection-table td.col-num::before {
+        content: "Profesional #";
+        margin-right: 0.25rem;
+    }
+
+    .projection-table td.col-actions {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: auto;
+        padding: 0;
+    }
+
+    .projection-table td.col-name,
+    .projection-table td.col-profile,
+    .projection-table td.col-hours,
+    .projection-table td.col-utility {
+        min-width: 100%;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .projection-table td.col-name::before {
+        content: "1. Nombre del Profesional";
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .projection-table td.col-profile::before {
+        content: "2. Perfil de Costo (UF/h)";
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .projection-table td.col-hours::before {
+        content: "3. Cálculo de Horas";
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
+    }
+
+    .projection-table td.col-utility::before {
+        content: "4. Margen & Utilidad Objetivo";
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 0.25rem;
     }
 
     .form-input,
