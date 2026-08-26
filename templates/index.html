@@ -64,6 +64,9 @@
                     onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
                     <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
                 </button>
+                <button class="btn btn-outline" id="btn-logout-workspace" style="color: #ff6b6b; border-color: rgba(255,107,107,0.4); display: none;" title="Cerrar Sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
+                </button>
                 <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría">
                     <i class="fa-solid fa-list-check"></i> <span class="btn-text">Logs Auditoría</span>
                 </button>
@@ -72,9 +75,6 @@
                 </button>
                 <button class="btn btn-accent" id="btn-save-projection" style="display: none;">
                     <i class="fa-solid fa-floppy-disk"></i> <span class="btn-text">Guardar</span>
-                </button>
-                <button class="btn btn-outline" id="btn-logout-workspace" style="color: #ff6b6b; border-color: rgba(255,107,107,0.4); display: none;" title="Cerrar Sesión">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
                 </button>
             </div>
         </header>
@@ -498,7 +498,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.4"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.5"></script>
 </body>
 
 </html>
