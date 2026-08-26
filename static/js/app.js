@@ -207,10 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnExportCsv) btnExportCsv.style.display = 'inline-flex';
             if (btnSaveProjection) btnSaveProjection.style.display = 'inline-flex';
 
-            const btnHeaderLogout = document.getElementById('btn-logout');
-            if (btnHeaderLogout) btnHeaderLogout.style.display = 'inline-flex';
-            const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
-            if (btnLogoutWorkspace) btnLogoutWorkspace.style.display = 'inline-flex';
+            const btnLogoutHeader = document.getElementById('btn-logout-header');
+            if (btnLogoutHeader) btnLogoutHeader.style.display = 'inline-flex';
 
             if (authUserContainer) {
                 authUserContainer.innerHTML = `
@@ -226,10 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gatekeeperView) gatekeeperView.style.display = 'block';
             if (appWorkspace) appWorkspace.style.display = 'none';
 
-            const btnHeaderLogout = document.getElementById('btn-logout');
-            if (btnHeaderLogout) btnHeaderLogout.style.display = 'none';
-            const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
-            if (btnLogoutWorkspace) btnLogoutWorkspace.style.display = 'inline-flex';
+            const btnLogoutHeader = document.getElementById('btn-logout-header');
+            if (btnLogoutHeader) btnLogoutHeader.style.display = 'none';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'inline-flex';
             if (btnViewLogs) btnViewLogs.style.display = 'none';
@@ -1072,16 +1068,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Logout buttons
         const doLogout = async () => {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+            } catch (err) {
+                console.error(err);
+            }
             if (inactivityTimer) clearTimeout(inactivityTimer);
             state.currentUser = null;
             renderAuthHeader();
             showToast('Sesión cerrada correctamente', 'success');
         };
-        const btnHeaderLogout = document.getElementById('btn-logout');
-        if (btnHeaderLogout) btnHeaderLogout.addEventListener('click', doLogout);
-        const btnLogoutWorkspace = document.getElementById('btn-logout-workspace');
-        if (btnLogoutWorkspace) btnLogoutWorkspace.addEventListener('click', doLogout);
+        window.doLogout = doLogout;
+
+        document.querySelectorAll('.do-logout-btn, #btn-logout, #btn-logout-header, #btn-logout-workspace').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                doLogout();
+            });
+        });
 
         // Modal triggers
         const btnManageProfilesWorkspace = document.getElementById('btn-manage-profiles-workspace');

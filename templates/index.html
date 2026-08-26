@@ -64,7 +64,7 @@
                     onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
                     <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
                 </button>
-                <button class="btn" id="btn-logout-workspace" title="Cerrar Sesión" style="background-color: #dc2626; color: #ffffff; font-weight: 700; border: none; padding: 0.55rem 1.1rem; border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 8px rgba(220,38,38,0.35);">
+                <button class="btn do-logout-btn" id="btn-logout-header" title="Cerrar Sesión" onclick="if(window.doLogout) window.doLogout();" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500;">
                     <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
                 </button>
                 <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría">
@@ -227,9 +227,6 @@
                         </button>
                         <button class="btn btn-primary" id="btn-add-professional">
                             <i class="fa-solid fa-user-plus"></i> Agregar Profesional
-                        </button>
-                        <button class="btn btn-outline" id="btn-logout-workspace" style="color: #ff6b6b; border-color: rgba(255,107,107,0.4);">
-                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
                         </button>
                     </div>
                 </div>
@@ -498,7 +495,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.6"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.4.7"></script>
 </body>
 
 </html>
