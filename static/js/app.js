@@ -629,8 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             let suffix = scale === 1000 ? ' Miles' : ' Millones';
             const numStr = new Intl.NumberFormat('es-CL', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
             }).format(scaledAmount);
             return `$ ${numStr}${suffix}`;
         }
