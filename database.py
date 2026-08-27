@@ -106,6 +106,29 @@ def init_db():
         )
     ''')
 
+    # Table for Professional Names Catalog (Nombres de Profesionales Institucionales)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS profesionales (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL UNIQUE,
+            perfil_nombre TEXT,
+            tarifa_costo REAL NOT NULL DEFAULT 1.0
+        )
+    ''')
+
+    cursor.execute('SELECT COUNT(*) FROM profesionales')
+    if cursor.fetchone()[0] == 0:
+        default_profs = [
+            ("Rodrigo Poblete", "Consultor Senior", 1.8),
+            ("Catalina Olivares", "Ingeniero Especialista", 0.7),
+            ("Juan Pedreros", "Ingeniero Senior", 1.1),
+            ("Amilcar Chavez", "Ingeniero", 0.5)
+        ]
+        cursor.executemany(
+            'INSERT INTO profesionales (nombre, perfil_nombre, tarifa_costo) VALUES (?, ?, ?)',
+            default_profs
+        )
+
     # Table for Audit Logs (Historial de Auditoría de Sesiones y Tareas)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS auditoria_logs (
@@ -155,6 +178,44 @@ def clear_all_perfiles():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('DELETE FROM perfiles')
+    conn.commit()
+    conn.close()
+
+def get_profesionales():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, nombre, perfil_nombre, tarifa_costo FROM profesionales ORDER BY nombre ASC')
+    profesionales = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return profesionales
+
+def upsert_profesional(nombre, perfil_nombre='', tarifa_costo=1.0):
+    if not nombre or not nombre.strip():
+        return None
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM profesionales WHERE LOWER(nombre) = ?', (nombre.lower().strip(),))
+    existing = cursor.fetchone()
+    if existing:
+        cursor.execute(
+            'UPDATE profesionales SET perfil_nombre = ?, tarifa_costo = ? WHERE id = ?',
+            (perfil_nombre.strip(), float(tarifa_costo), existing['id'])
+        )
+        res_id = existing['id']
+    else:
+        cursor.execute(
+            'INSERT INTO profesionales (nombre, perfil_nombre, tarifa_costo) VALUES (?, ?, ?)',
+            (nombre.strip(), perfil_nombre.strip(), float(tarifa_costo))
+        )
+        res_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return res_id
+
+def clear_all_profesionales():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM profesionales')
     conn.commit()
     conn.close()
 

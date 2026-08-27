@@ -449,11 +449,36 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
     }
 
+    async function loadProfesionalesFromDB() {
+        try {
+            const res = await fetch('/api/profesionales');
+            const data = await res.json();
+            if (data.status === 'success' && data.data && data.data.length > 0) {
+                const list = [];
+                const seen = new Set();
+                data.data.forEach(p => {
+                    if (p && p.nombre && !seen.has(p.nombre.trim().toLowerCase())) {
+                        seen.add(p.nombre.trim().toLowerCase());
+                        list.push({
+                            nombre: p.nombre.trim(),
+                            perfil: p.perfil_nombre || p.nombre.trim(),
+                            tarifa: parseFloat(p.tarifa_costo) || 1.0
+                        });
+                    }
+                });
+                state.profesionalesLista = list;
+            }
+        } catch (err) {
+            console.warn('Error al cargar profesionales desde DB:', err);
+        }
+    }
+    window.loadProfesionalesFromDB = loadProfesionalesFromDB;
+
     function updateProfesionalesListaFromDatabase() {
         const list = [];
         const seen = new Set();
 
-        // 1. Maintain existing uploaded professionals list
+        // 1. Maintain existing DB / uploaded professionals list
         (state.profesionalesLista || []).forEach(p => {
             if (p && p.nombre && !seen.has(p.nombre.trim().toLowerCase())) {
                 seen.add(p.nombre.trim().toLowerCase());
@@ -495,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API CALLS ---
     async function loadPerfiles() {
         try {
+            await loadProfesionalesFromDB();
             const res = await fetch('/api/perfiles');
             const data = await res.json();
             if (data.status === 'success') {

@@ -244,6 +244,11 @@ def api_delete_perfil(perfil_id):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/api/profesionales', methods=['GET'])
+def api_get_profesionales():
+    profesionales = database.get_profesionales()
+    return jsonify({"status": "success", "data": profesionales})
+
 import openpyxl
 import openpyxl.styles
 import openpyxl.utils
@@ -329,6 +334,8 @@ def api_upload_excel_perfiles():
                     continue
                 if perfil_nombre and tarifa_costo > 0:
                     pid = database.upsert_perfil(perfil_nombre, tarifa_costo)
+                    if profesional:
+                        database.upsert_profesional(profesional, perfil_nombre, tarifa_costo)
                     imported_items.append({
                         "profesional": profesional or perfil_nombre,
                         "perfil_id": pid,
@@ -357,6 +364,8 @@ def api_upload_excel_perfiles():
 
                 if perfil_nombre and tarifa_costo > 0:
                     pid = database.upsert_perfil(perfil_nombre, tarifa_costo)
+                    if profesional:
+                        database.upsert_profesional(profesional, perfil_nombre, tarifa_costo)
                     imported_items.append({
                         "profesional": profesional or perfil_nombre,
                         "perfil_id": pid,
