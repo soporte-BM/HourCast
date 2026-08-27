@@ -574,7 +574,7 @@
                                     <label for="add-prof-rate" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
                                         <i class="fa-solid fa-coins" style="color: var(--emerald);"></i> Tarifa (UF/hora)
                                     </label>
-                                    <input type="number" id="add-prof-rate" class="form-input" step="0.05" min="0.1" value="1.0">
+                                    <input type="number" id="add-prof-rate" class="form-input" step="0.05" min="0.1" value="1.0" readonly style="cursor: not-allowed; opacity: 0.85;" title="Tarifa por Hora en UF (Bloqueada desde catálogo/DB)">
                                 </div>
                                 <div class="form-group">
                                     <label for="add-prof-hours" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
@@ -607,7 +607,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.8.4"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.8.5"></script>
 </body>
 
 </html>

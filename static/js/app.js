@@ -711,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${optionsHtml}
                         </select>
                         <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem;">
-                            <input type="number" class="form-input item-rate-input" data-uid="${item.uid}" value="${item.tarifa_costo}" step="0.05" min="0.1" max="5.0" style="padding:0.3rem 0.5rem; font-size:0.85rem; font-weight:600;" title="Tarifa por Hora en UF">
+                            <input type="number" class="form-input item-rate-input" data-uid="${item.uid}" value="${item.tarifa_costo}" step="0.05" min="0.1" max="5.0" readonly style="padding:0.3rem 0.5rem; font-size:0.85rem; font-weight:600; cursor:not-allowed; opacity:0.85;" title="Tarifa por Hora en UF (Bloqueada desde catálogo/DB)">
                             <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">UF/hora (${formatCLP(item.tarifa_costo * state.valorUF)}/h)</span>
                         </div>
                     </div>
