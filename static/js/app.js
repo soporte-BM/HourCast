@@ -1149,8 +1149,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (btnSaveProjection) btnSaveProjection.addEventListener('click', saveCurrentProjection);
-        const btnSaveProjectionWorkspace = document.getElementById('btn-save-projection-workspace');
-        if (btnSaveProjectionWorkspace) btnSaveProjectionWorkspace.addEventListener('click', saveCurrentProjection);
 
         // Logout buttons
         const doLogout = async () => {
