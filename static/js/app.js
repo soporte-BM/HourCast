@@ -663,13 +663,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
 
             // Construct Professional Select Options
-            let profOptionsHtml = `<option value="">-- Seleccionar Profesional / Perfil --</option>`;
+            let profOptionsHtml = `<option value="">-- Seleccionar Profesional --</option>`;
             let matchedInList = false;
 
             state.profesionalesLista.forEach(prof => {
                 const isSelected = item.profesional && item.profesional.toLowerCase() === prof.nombre.toLowerCase();
                 if (isSelected) matchedInList = true;
-                profOptionsHtml += `<option value="${escapeHtml(prof.nombre)}" ${isSelected ? 'selected' : ''}>${escapeHtml(prof.nombre)} (${escapeHtml(prof.perfil)})</option>`;
+                profOptionsHtml += `<option value="${escapeHtml(prof.nombre)}" ${isSelected ? 'selected' : ''}>${escapeHtml(prof.nombre)}</option>`;
             });
 
             const isCustom = !matchedInList && item.profesional && item.profesional !== '';
@@ -1145,9 +1145,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateProfesionalesListaFromDatabase();
 
-        let html = '<option value="">-- Seleccionar Profesional / Perfil --</option>';
+        let html = '<option value="">-- Seleccionar Profesional --</option>';
         state.profesionalesLista.forEach(p => {
-            html += `<option value="${escapeHtml(p.nombre)}" data-rate="${p.tarifa || 1.0}" data-perfil="${escapeHtml(p.perfil || p.nombre)}">${escapeHtml(p.nombre)} (${escapeHtml(p.perfil || p.nombre)})</option>`;
+            html += `<option value="${escapeHtml(p.nombre)}" data-rate="${p.tarifa || 1.0}" data-perfil="${escapeHtml(p.perfil || p.nombre)}">${escapeHtml(p.nombre)}</option>`;
         });
         html += '<option value="__custom__">+ Escribir nuevo nombre personalizado...</option>';
         selProf.innerHTML = html;
