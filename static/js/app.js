@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addInitialDefaultRows() {
         if (state.perfiles.length > 0) {
             const p1 = state.perfiles[0];
-            state.items.push(createItemObject('Profesional 1', p1.id, p1.nombre, p1.tarifa_costo, 10));
+            state.items.push(createItemObject('', p1.id, p1.nombre, p1.tarifa_costo, 10));
         } else {
             state.items = [];
         }
@@ -1054,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 if (chkAutoImportRows && chkAutoImportRows.checked) {
                                     state.items.push(createItemObject(
-                                        imp.profesional || `Profesional ${idx + 1}`,
+                                        imp.profesional || imp.perfil_nombre || '',
                                         imp.perfil_id,
                                         imp.perfil_nombre,
                                         imp.tarifa_costo,
@@ -1120,7 +1120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const handleAdd = () => {
             const defaultProfile = state.perfiles[0] || {};
             state.items.push(createItemObject(
-                `Profesional ${state.items.length + 1}`,
+                '',
                 defaultProfile.id || null,
                 defaultProfile.nombre || 'Personalizado',
                 defaultProfile.tarifa_costo || 1.0,
