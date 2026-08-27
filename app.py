@@ -313,8 +313,9 @@ def api_upload_excel_perfiles():
     if not filename.endswith(('.xlsx', '.xls', '.csv')):
         return jsonify({"status": "error", "message": "Formato no válido. Debe ser un archivo Excel (.xlsx, .xls) o CSV (.csv)"}), 400
 
-    # Clear previous database profiles for bulk upload replacement
+    # Clear previous database profiles and professionals for bulk upload replacement
     database.clear_all_perfiles()
+    database.clear_all_profesionales()
 
     imported_items = []
     try:

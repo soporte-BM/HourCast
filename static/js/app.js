@@ -490,19 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 2. Add profiles from DB catalog (state.perfiles) as options
-        (state.perfiles || []).forEach(p => {
-            if (p && p.nombre && !seen.has(p.nombre.trim().toLowerCase())) {
-                seen.add(p.nombre.trim().toLowerCase());
-                list.push({
-                    nombre: p.nombre.trim(),
-                    perfil: p.nombre.trim(),
-                    tarifa: parseFloat(p.tarifa_costo) || 1.0
-                });
-            }
-        });
-
-        // 3. Add any custom professionals present in current items
+        // 2. Add any custom professionals present in current items
         (state.items || []).forEach(i => {
             if (i && i.profesional && !seen.has(i.profesional.trim().toLowerCase())) {
                 seen.add(i.profesional.trim().toLowerCase());
