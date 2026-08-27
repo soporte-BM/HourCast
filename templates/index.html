@@ -16,7 +16,7 @@
     <!-- Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.6.2">
 </head>
 
 <body>
@@ -57,17 +57,20 @@
                     </div>
                 </div>
 
-                <div id="auth-user-container" class="auth-user-wrap">
-                    <!-- Dynamic auth badge rendered via JS -->
+                <div id="user-header-box" class="user-header-box" style="display: none; align-items: center; gap: 0.6rem;">
+                    <div id="auth-user-container" class="auth-user-wrap">
+                        <!-- Dynamic auth badge rendered via JS -->
+                    </div>
+                    <button class="btn do-logout-btn btn-logout-danger" id="btn-logout-header" title="Cerrar Sesión" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>{window.location.href='/';}).catch(()=>{window.location.href='/';});">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
+                    </button>
                 </div>
                 <button class="btn btn-secondary" id="btn-manage-profiles" style="display: none;"
                     onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
                     <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
                 </button>
-                <button class="btn do-logout-btn" id="btn-logout-header" title="Cerrar Sesión" onclick="fetch('/api/auth/logout',{method:'POST'}).then(()=>{window.location.href='/';}).catch(()=>{window.location.href='/';});" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer; display: none; align-items: center; gap: 0.4rem; font-weight: 500;">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="btn-text">Cerrar Sesión</span>
-                </button>
-                <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría">
+                <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría"
+                    onclick="const m=document.getElementById('modal-logs'); if(m) m.classList.add('active'); if(window.loadAuditLogs) window.loadAuditLogs();">
                     <i class="fa-solid fa-list-check"></i> <span class="btn-text">Logs Auditoría</span>
                 </button>
                 <button class="btn btn-primary" id="btn-export-csv" style="display: none;">
@@ -482,7 +485,15 @@
                             </table>
                         </div>
                     </div>
-                    <div class="modal-footer" style="justify-content: flex-end;">
+                    <div class="modal-footer" style="justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="/api/logs/export?format=csv" class="btn btn-outline" id="btn-export-logs-csv" title="Descargar registros en CSV">
+                                <i class="fa-solid fa-file-csv"></i> Descargar CSV
+                            </a>
+                            <a href="/api/logs/export?format=txt" class="btn btn-outline" id="btn-export-logs-txt" title="Descargar registros en Texto Plano (.txt)">
+                                <i class="fa-solid fa-file-lines"></i> Descargar TXT
+                            </a>
+                        </div>
                         <button class="btn btn-secondary close-modal" onclick="const m=document.getElementById('modal-logs'); if(m) m.classList.remove('active');">
                             Cerrar
                         </button>
@@ -494,7 +505,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.6.1"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.6.3"></script>
 </body>
 
 </html>

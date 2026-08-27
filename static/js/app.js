@@ -206,8 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnExportCsv) btnExportCsv.style.display = 'inline-flex';
             if (btnSaveProjection) btnSaveProjection.style.display = 'inline-flex';
 
-            const btnLogoutHeader = document.getElementById('btn-logout-header');
-            if (btnLogoutHeader) btnLogoutHeader.style.display = 'inline-flex';
+            const userHeaderBox = document.getElementById('user-header-box');
+            if (userHeaderBox) userHeaderBox.style.display = 'flex';
 
             if (authUserContainer) {
                 authUserContainer.innerHTML = `
@@ -223,8 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gatekeeperView) gatekeeperView.style.display = 'block';
             if (appWorkspace) appWorkspace.style.display = 'none';
 
-            const btnLogoutHeader = document.getElementById('btn-logout-header');
-            if (btnLogoutHeader) btnLogoutHeader.style.display = 'none';
+            const userHeaderBox = document.getElementById('user-header-box');
+            if (userHeaderBox) userHeaderBox.style.display = 'none';
 
             if (btnManageProfiles) btnManageProfiles.style.display = 'none';
             if (btnViewLogs) btnViewLogs.style.display = 'none';
@@ -269,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tbodyLogs.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--rose); padding:1.5rem;">Error al obtener el historial de auditoría.</td></tr>';
         }
     }
+    window.loadAuditLogs = loadAuditLogs;
 
     async function fetchLiveUF() {
         if (ufDateBadge) {
@@ -576,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="col-utility">
                     <div class="utility-box">
                         <div class="row-margin-slider-wrap">
-                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="20" step="0.1" value="${item.margen_porcentaje}">
+                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="20" step="0.5" value="${item.margen_porcentaje}">
                             <span class="row-margin-val">${item.margen_porcentaje.toFixed(1)}%</span>
                         </div>
                         <div class="utility-result-line">

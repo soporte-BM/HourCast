@@ -7,7 +7,7 @@ import io
 import os
 import ssl
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'proyectabm_bmining_secret_key_2026')
@@ -118,8 +118,57 @@ def api_auth_logout():
 
 @app.route('/api/logs', methods=['GET'])
 def api_get_logs():
-    logs = database.get_audit_logs(limit=100)
+    logs = database.get_audit_logs(limit=200)
     return jsonify({"status": "success", "data": logs})
+
+@app.route('/api/logs/export', methods=['GET'])
+def api_export_logs():
+    fmt = request.args.get('format', 'csv').lower()
+    logs = database.get_audit_logs(limit=1000)
+    
+    if fmt == 'txt':
+        output_lines = []
+        output_lines.append("================================================================================")
+        output_lines.append("                 HOURCAST / PROYECTABM - REGISTRO DE AUDITORÍA                  ")
+        output_lines.append(f" Reporte generado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        output_lines.append("================================================================================\n")
+        
+        for log in logs:
+            fecha = str(log.get('fecha_registro', ''))[:19]
+            nombre = log.get('usuario_nombre') or 'Usuario'
+            email = log.get('usuario_email') or 'N/A'
+            accion = log.get('accion') or 'ACCION'
+            detalles = log.get('detalles') or ''
+            ip = log.get('ip_address') or '127.0.0.1'
+            output_lines.append(f"[{fecha}] [{accion}] {nombre} ({email}) [IP: {ip}]\n  Detalles: {detalles}\n")
+            
+        content = "\n".join(output_lines)
+        return Response(
+            content.encode('utf-8'),
+            mimetype='text/plain',
+            headers={"Content-Disposition": "attachment; filename=historial_auditoria_logs.txt"}
+        )
+    else:
+        # Default CSV Export (delimiter = ';')
+        output = io.StringIO()
+        writer = csv.writer(output, delimiter=';')
+        writer.writerow(['ID', 'Fecha_Hora', 'Usuario_Nombre', 'Usuario_Email', 'Accion', 'Detalles', 'IP_Address'])
+        for log in logs:
+            fecha = str(log.get('fecha_registro', ''))[:19]
+            writer.writerow([
+                log.get('id', ''),
+                fecha,
+                log.get('usuario_nombre', ''),
+                log.get('usuario_email', ''),
+                log.get('accion', ''),
+                log.get('detalles', ''),
+                log.get('ip_address', '')
+            ])
+        return Response(
+            output.getvalue().encode('utf-8-sig'),
+            mimetype='text/csv',
+            headers={"Content-Disposition": "attachment; filename=historial_auditoria_logs.csv"}
+        )
 
 # Endpoint to fetch live UF from mindicador.cl/api
 @app.route('/api/uf', methods=['GET'])
