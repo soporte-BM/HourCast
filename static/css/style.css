@@ -84,10 +84,31 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+[data-theme="light"] .form-input, 
+[data-theme="light"] .form-select,
+[data-theme="light"] input.form-input,
+[data-theme="light"] select.form-select,
 [data-theme="light"] .table-input {
-    background: rgba(241, 245, 249, 0.9);
-    border-color: rgba(203, 213, 225, 0.9);
-    color: #0f172a;
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .form-input::placeholder {
+    color: #64748b !important;
+    opacity: 0.85 !important;
+}
+
+[data-theme="light"] .form-input[readonly],
+[data-theme="light"] .form-input:disabled {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .form-select option {
+    background: #ffffff !important;
+    color: #0f172a !important;
 }
 
 [data-theme="light"] .margin-global-config {
@@ -164,17 +185,31 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+[data-theme="sepia"] .form-input, 
+[data-theme="sepia"] .form-select,
+[data-theme="sepia"] input.form-input,
+[data-theme="sepia"] select.form-select,
 [data-theme="sepia"] .table-input {
-    background: rgba(238, 232, 213, 0.9);
-    border-color: rgba(211, 198, 170, 0.9);
-    color: #433422;
+    background: #fdf6e3 !important;
+    border-color: #d3c6aa !important;
+    color: #433422 !important;
 }
 
-[data-theme="sepia"] .form-input, 
-[data-theme="sepia"] .form-select {
-    background: #fdf6e3;
-    border-color: #d3c6aa;
-    color: #433422;
+[data-theme="sepia"] .form-input::placeholder {
+    color: #8b7355 !important;
+    opacity: 0.85 !important;
+}
+
+[data-theme="sepia"] .form-input[readonly],
+[data-theme="sepia"] .form-input:disabled {
+    background: #eee8d5 !important;
+    color: #433422 !important;
+    border-color: #d3c6aa !important;
+}
+
+[data-theme="sepia"] .form-select option {
+    background: #fdf6e3 !important;
+    color: #433422 !important;
 }
 
 [data-theme="sepia"] .margin-global-config {
