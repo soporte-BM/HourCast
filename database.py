@@ -2,10 +2,12 @@ import sqlite3
 import os
 import json
 
-if os.path.exists('/tmp') and os.access('/tmp', os.W_OK):
+DB_DIR = os.path.dirname(__file__)
+DB_FILE = os.path.join(DB_DIR, 'proyectabm.db')
+
+# Fallback a /tmp solo si el directorio del proyecto no permite escritura
+if not os.access(DB_DIR, os.W_OK) and os.path.exists('/tmp') and os.access('/tmp', os.W_OK):
     DB_FILE = '/tmp/proyectabm.db'
-else:
-    DB_FILE = os.path.join(os.path.dirname(__file__), 'proyectabm.db')
 
 def get_connection():
     conn = sqlite3.connect(DB_FILE)
