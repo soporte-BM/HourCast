@@ -502,6 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Sort list in ascending order (A-Z)
+        list.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+
         state.profesionalesLista = list;
     }
 

@@ -184,7 +184,7 @@ def clear_all_perfiles():
 def get_profesionales():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT id, nombre, perfil_nombre, tarifa_costo FROM profesionales ORDER BY nombre ASC')
+    cursor.execute('SELECT id, nombre, perfil_nombre, tarifa_costo FROM profesionales ORDER BY nombre COLLATE NOCASE ASC')
     profesionales = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return profesionales
