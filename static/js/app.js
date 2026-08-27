@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).format(Math.round(scaledAmount));
             return `$ ${numStr}`;
         } else {
-            let suffix = scale === 1000 ? ' Miles ($k)' : ' Millones ($M)';
+            let suffix = scale === 1000 ? ' Miles' : ' Millones';
             const numStr = new Intl.NumberFormat('es-CL', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -1520,8 +1520,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const scale = parseFloat(state.unidadEscala) || 1;
         let unitTag = '';
-        if (scale === 1000) unitTag = ' (Miles $k)';
-        else if (scale === 1000000) unitTag = ' (Millones $M)';
+        if (scale === 1000) unitTag = ' (Miles)';
+        else if (scale === 1000000) unitTag = ' (Millones)';
 
         // Chart 1: Per professional breakdown
         distChart.data.datasets[0].label = `Costo Directo${unitTag}`;
