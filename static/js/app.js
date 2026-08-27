@@ -679,10 +679,16 @@ document.addEventListener('DOMContentLoaded', () => {
             profOptionsHtml += `<option value="__custom__" ${item.isEditingCustomName ? 'selected' : ''}>+ Escribir nuevo nombre...</option>`;
 
             // Construct Profile Select Options
-            let optionsHtml = `<option value="">-- Tarifas Predefinidas (UF) --</option>`;
+            let optionsHtml = `<option value="">-- Seleccionar Perfil de Costo --</option>`;
             state.perfiles.forEach(p => {
-                const selected = item.perfil_id == p.id ? 'selected' : '';
-                optionsHtml += `<option value="${p.id}" ${selected}>${p.nombre} (${p.tarifa_costo.toFixed(2)} UF/h)</option>`;
+                const isSelected = (item.perfil_id && item.perfil_id == p.id) || 
+                                   (item.perfil_nombre && item.perfil_nombre.toLowerCase() === p.nombre.toLowerCase());
+                if (isSelected) {
+                    item.perfil_id = p.id;
+                }
+                const selectedStr = isSelected ? 'selected' : '';
+                const clpRate = p.tarifa_costo * state.valorUF;
+                optionsHtml += `<option value="${p.id}" ${selectedStr}>${escapeHtml(p.nombre)} (${formatCLP(clpRate)}/h - ${p.tarifa_costo.toFixed(2)} UF/h)</option>`;
             });
 
             tr.innerHTML = `
@@ -769,17 +775,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         item.isEditingCustomName = false;
                         item.profesional = val;
 
-                        // Auto-match profile & rate from selected professional
+                        // Auto-match profile & rate from selected professional in DB
                         const foundProf = state.profesionalesLista.find(p => p.nombre.toLowerCase() === val.toLowerCase());
                         if (foundProf) {
-                            const matchPerfil = state.perfiles.find(p => p.nombre.toLowerCase() === foundProf.perfil.toLowerCase());
+                            const assocPerfil = foundProf.perfil || '';
+                            const assocTarifa = parseFloat(foundProf.tarifa) || 1.0;
+
+                            item.perfil_nombre = assocPerfil;
+                            item.tarifa_costo = assocTarifa;
+
+                            const matchPerfil = state.perfiles.find(p => p.nombre.toLowerCase() === assocPerfil.toLowerCase());
                             if (matchPerfil) {
                                 item.perfil_id = matchPerfil.id;
-                                item.perfil_nombre = matchPerfil.nombre;
-                                item.tarifa_costo = matchPerfil.tarifa_costo;
-                            } else if (foundProf.tarifa) {
-                                item.tarifa_costo = foundProf.tarifa;
-                                item.perfil_nombre = foundProf.perfil;
+                                if (matchPerfil.tarifa_costo) {
+                                    item.tarifa_costo = matchPerfil.tarifa_costo;
+                                }
+                            } else {
+                                item.perfil_id = '';
                             }
                         }
                     }
@@ -1169,7 +1181,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (groupCustom) groupCustom.style.display = 'none';
                 const foundProf = state.profesionalesLista.find(p => p.nombre.toLowerCase() === val.toLowerCase());
                 if (foundProf && inpRate) {
-                    inpRate.value = foundProf.tarifa || 1.0;
+                    const matchPerfil = state.perfiles.find(p => p.nombre.toLowerCase() === (foundProf.perfil || '').toLowerCase());
+                    inpRate.value = matchPerfil ? matchPerfil.tarifa_costo : (foundProf.tarifa || 1.0);
                 }
             }
         });
@@ -1203,7 +1216,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (foundProf) {
                     perfilNombre = foundProf.perfil || foundProf.nombre;
                     const matchDB = state.perfiles.find(p => p.nombre.toLowerCase() === perfilNombre.toLowerCase());
-                    if (matchDB) perfilId = matchDB.id;
+                    if (matchDB) {
+                        perfilId = matchDB.id;
+                        perfilNombre = matchDB.nombre;
+                    }
                 }
             } else {
                 showToast('Selecciona un profesional o escribe uno nuevo', 'error');
