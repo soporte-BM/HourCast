@@ -201,6 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gatekeeperView) gatekeeperView.style.display = 'none';
             if (appWorkspace) appWorkspace.style.display = 'block';
 
+            const btnViewProjections = document.getElementById('btn-view-projections');
+            if (btnViewProjections) btnViewProjections.style.display = 'inline-flex';
             if (btnManageProfiles) btnManageProfiles.style.display = 'inline-flex';
             if (btnViewLogs) btnViewLogs.style.display = 'inline-flex';
             if (btnExportCsv) btnExportCsv.style.display = 'inline-flex';
@@ -217,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }
+            loadLatestSavedProjection();
         } else {
             if (inactivityTimer) clearTimeout(inactivityTimer);
             // HIDE WORKSPACE & SHOW LOGIN WALL (ACCESS CONTROL GATEKEEPER)
@@ -226,6 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const userHeaderBox = document.getElementById('user-header-box');
             if (userHeaderBox) userHeaderBox.style.display = 'none';
 
+            const btnViewProjections = document.getElementById('btn-view-projections');
+            if (btnViewProjections) btnViewProjections.style.display = 'none';
             if (btnManageProfiles) btnManageProfiles.style.display = 'none';
             if (btnViewLogs) btnViewLogs.style.display = 'none';
             if (btnExportCsv) btnExportCsv.style.display = 'none';
@@ -270,6 +275,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     window.loadAuditLogs = loadAuditLogs;
+
+    async function loadLatestSavedProjection() {
+        try {
+            const res = await fetch('/api/proyecciones');
+            const data = await res.json();
+            if (data.status === 'success' && data.data && data.data.length > 0) {
+                await loadSingleProjection(data.data[0].id, false);
+            }
+        } catch (err) {
+            console.warn('Error al auto-cargar ultima proyeccion:', err);
+        }
+    }
+    window.loadLatestSavedProjection = loadLatestSavedProjection;
+
+    async function loadSingleProjection(projId, showToastFlag = true) {
+        try {
+            const projRes = await fetch(`/api/proyecciones/${projId}`);
+            const projData = await projRes.json();
+            if (projData.status === 'success' && projData.data) {
+                const proj = projData.data;
+                state.currentProjectionId = proj.id;
+                if (projectNameInput) projectNameInput.value = proj.nombre_proyecto || 'Proyección de Horas';
+                if (clientNameInput) clientNameInput.value = proj.cliente || '';
+                if (proj.modo_margen) state.modoMargen = proj.modo_margen;
+                if (proj.margen_global) state.margenGlobal = parseFloat(proj.margen_global);
+                if (proj.unidad_escala) state.unidadEscala = parseFloat(proj.unidad_escala);
+
+                if (proj.datos && Array.isArray(proj.datos) && proj.datos.length > 0) {
+                    state.items = proj.datos;
+                    render();
+                    if (showToastFlag) {
+                        showToast(`Proyección "${proj.nombre_proyecto}" cargada con ${proj.datos.length} profesionales`, 'success');
+                        const m = document.getElementById('modal-proyecciones');
+                        if (m) m.classList.remove('active');
+                    }
+                }
+            }
+        } catch (err) {
+            showToast('Error al cargar la proyección seleccionada', 'error');
+        }
+    }
+    window.loadSingleProjection = loadSingleProjection;
+
+    async function loadProyeccionesList() {
+        const tbodyProj = document.getElementById('proyecciones-list-tbody');
+        if (!tbodyProj) return;
+        tbodyProj.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted);">Cargando proyecciones guardadas...</td></tr>';
+        try {
+            const res = await fetch('/api/proyecciones');
+            const data = await res.json();
+            if (data.status === 'success' && data.data && data.data.length > 0) {
+                let html = '';
+                data.data.forEach(p => {
+                    const dateStr = p.fecha ? p.fecha.replace('T', ' ').substring(0, 16) : '-';
+                    html += `
+                        <tr>
+                            <td><strong>${escapeHtml(p.nombre_proyecto || 'Proyección')}</strong></td>
+                            <td><span style="color:var(--text-muted); font-size:0.82rem;">${escapeHtml(p.cliente || 'Bmining')}</span></td>
+                            <td><span style="font-size:0.78rem; color:var(--text-dim);">${escapeHtml(dateStr)}</span></td>
+                            <td style="text-align:center;"><span class="badge badge-emerald">${parseFloat(p.margen_global || 15).toFixed(1)}%</span></td>
+                            <td style="text-align:right;">
+                                <button class="btn btn-primary" style="padding:0.3rem 0.7rem; font-size:0.8rem;" onclick="window.loadSingleProjection(${p.id})">
+                                    <i class="fa-solid fa-folder-open"></i> Cargar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbodyProj.innerHTML = html;
+            } else {
+                tbodyProj.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--text-muted);">No hay proyecciones guardadas aún.</td></tr>';
+            }
+        } catch (err) {
+            tbodyProj.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--rose); padding:1.5rem;">Error al obtener proyecciones.</td></tr>';
+        }
+    }
+    window.loadProyeccionesList = loadProyeccionesList;
 
     async function fetchLiveUF() {
         if (ufDateBadge) {

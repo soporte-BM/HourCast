@@ -69,6 +69,10 @@
                     onclick="const m=document.getElementById('modal-profiles'); if(m) m.classList.add('active');">
                     <i class="fa-solid fa-user-gear"></i> <span class="btn-text">Catálogo Perfiles</span>
                 </button>
+                <button class="btn btn-secondary" id="btn-view-projections" style="display: none;" title="Ver Proyecciones Guardadas"
+                    onclick="const m=document.getElementById('modal-proyecciones'); if(m) m.classList.add('active'); if(window.loadProyeccionesList) window.loadProyeccionesList();">
+                    <i class="fa-solid fa-folder-open"></i> <span class="btn-text">Proyecciones</span>
+                </button>
                 <button class="btn btn-secondary" id="btn-view-logs" style="display: none;" title="Historial de Auditoría"
                     onclick="const m=document.getElementById('modal-logs'); if(m) m.classList.add('active'); if(window.loadAuditLogs) window.loadAuditLogs();">
                     <i class="fa-solid fa-list-check"></i> <span class="btn-text">Logs Auditoría</span>
@@ -502,13 +506,48 @@
                         </button>
                     </div>
                 </div>
+            <!-- MODAL: PROYECCIONES GUARDADAS -->
+            <div class="modal-backdrop" id="modal-proyecciones">
+                <div class="modal-box glass-card" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-folder-open" style="color:var(--primary);"></i> Proyecciones Guardadas en la Plataforma</h3>
+                        <button class="modal-close close-modal" onclick="const m=document.getElementById('modal-proyecciones'); if(m) m.classList.remove('active');">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                            Selecciona cualquier proyección guardada por los usuarios del equipo para cargarla instantáneamente en tu matriz de trabajo.
+                        </p>
+
+                        <div class="table-responsive" style="max-height: 400px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);">
+                            <table class="projection-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fa-solid fa-folder"></i> Proyecto</th>
+                                        <th><i class="fa-solid fa-building"></i> Cliente</th>
+                                        <th><i class="fa-solid fa-calendar"></i> Fecha</th>
+                                        <th style="text-align: center;"><i class="fa-solid fa-sliders"></i> Margen</th>
+                                        <th style="text-align: right;"><i class="fa-solid fa-bolt"></i> Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proyecciones-list-tbody">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary close-modal" onclick="const m=document.getElementById('modal-proyecciones'); if(m) m.classList.remove('active');">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- TOAST NOTIFICATION CONTAINER -->
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.6.3"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.6.6"></script>
 </body>
 
 </html>

@@ -367,11 +367,42 @@ def api_upload_excel_perfiles():
         u_email, u_nombre = get_current_user_info()
         database.log_activity(u_email, u_nombre, 'CARGA_MASIVA_EXCEL', f'Procesó archivo Excel e importó {len(imported_items)} registros', request.remote_addr)
 
+        # Auto save projection entry so all users see the 45 items in shared projections
+        saved_proj_id = None
+        if imported_items:
+            try:
+                # Format full items list for projection engine
+                formatted_items = []
+                for idx, imp in enumerate(imported_items):
+                    formatted_items.append({
+                        "uid": f"imp_{idx+1}_{int(datetime.now().timestamp())}",
+                        "profesional": imp.get("profesional") or f"Profesional {idx+1}",
+                        "perfil_id": imp.get("perfil_id", ""),
+                        "perfil_nombre": imp.get("perfil_nombre", "Personalizado"),
+                        "tarifa_costo": float(imp.get("tarifa_costo", 1.0)),
+                        "horas": 10,
+                        "costo_total": 0,
+                        "margen_porcentaje": 15.0,
+                        "monto_utilidad": 0,
+                        "precio_venta": 0
+                    })
+                saved_proj_id = database.save_proyeccion(
+                    nombre_proyecto=f"Carga Masiva Excel - {u_nombre}",
+                    cliente="Bmining",
+                    modo_margen="costo",
+                    margen_global=15.0,
+                    unidad_escala=1000.0,
+                    items_data=formatted_items
+                )
+            except Exception as ex_proj:
+                pass
+
         return jsonify({
             "status": "success",
             "message": f"Se importaron {len(imported_items)} registros exitosamente",
             "count": len(imported_items),
-            "items": imported_items
+            "items": imported_items,
+            "projection_id": saved_proj_id
         })
     except Exception as e:
         return jsonify({"status": "error", "message": f"Error al procesar archivo Excel: {str(e)}"}), 500
