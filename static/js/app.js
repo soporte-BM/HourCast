@@ -449,6 +449,49 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
     }
 
+    function updateProfesionalesListaFromDatabase() {
+        const list = [];
+        const seen = new Set();
+
+        // 1. Maintain existing uploaded professionals list
+        (state.profesionalesLista || []).forEach(p => {
+            if (p && p.nombre && !seen.has(p.nombre.trim().toLowerCase())) {
+                seen.add(p.nombre.trim().toLowerCase());
+                list.push({
+                    nombre: p.nombre.trim(),
+                    perfil: p.perfil || p.nombre.trim(),
+                    tarifa: parseFloat(p.tarifa) || 1.0
+                });
+            }
+        });
+
+        // 2. Add profiles from DB catalog (state.perfiles) as options
+        (state.perfiles || []).forEach(p => {
+            if (p && p.nombre && !seen.has(p.nombre.trim().toLowerCase())) {
+                seen.add(p.nombre.trim().toLowerCase());
+                list.push({
+                    nombre: p.nombre.trim(),
+                    perfil: p.nombre.trim(),
+                    tarifa: parseFloat(p.tarifa_costo) || 1.0
+                });
+            }
+        });
+
+        // 3. Add any custom professionals present in current items
+        (state.items || []).forEach(i => {
+            if (i && i.profesional && !seen.has(i.profesional.trim().toLowerCase())) {
+                seen.add(i.profesional.trim().toLowerCase());
+                list.push({
+                    nombre: i.profesional.trim(),
+                    perfil: i.perfil_nombre || 'Personalizado',
+                    tarifa: parseFloat(i.tarifa_costo) || 1.0
+                });
+            }
+        });
+
+        state.profesionalesLista = list;
+    }
+
     // --- API CALLS ---
     async function loadPerfiles() {
         try {
@@ -456,6 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (data.status === 'success') {
                 state.perfiles = data.data;
+                updateProfesionalesListaFromDatabase();
                 renderProfilesModalList();
             }
         } catch (err) {
@@ -592,11 +636,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        updateProfesionalesListaFromDatabase();
+
         state.items.forEach((item, index) => {
             const tr = document.createElement('tr');
 
             // Construct Professional Select Options
-            let profOptionsHtml = `<option value="">-- Seleccionar Profesional --</option>`;
+            let profOptionsHtml = `<option value="">-- Seleccionar Profesional / Perfil --</option>`;
             let matchedInList = false;
 
             state.profesionalesLista.forEach(prof => {
