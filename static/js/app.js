@@ -1031,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Save Projection to SQLite
-        btnSaveProjection.addEventListener('click', async () => {
+        async function saveCurrentProjection() {
             if (state.items.length === 0) {
                 showToast('Agrega profesionales antes de guardar', 'error');
                 return;
@@ -1057,14 +1057,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 if (data.status === 'success') {
                     state.currentProjectionId = data.id;
-                    showToast('Proyección guardada en base de datos', 'success');
+                    showToast('Proyección guardada exitosamente en la base de datos', 'success');
                 } else {
                     showToast(data.message || 'Error al guardar', 'error');
                 }
             } catch (err) {
                 showToast('Error de servidor al guardar proyección', 'error');
             }
-        });
+        }
+
+        if (btnSaveProjection) btnSaveProjection.addEventListener('click', saveCurrentProjection);
+        const btnSaveProjectionWorkspace = document.getElementById('btn-save-projection-workspace');
+        if (btnSaveProjectionWorkspace) btnSaveProjectionWorkspace.addEventListener('click', saveCurrentProjection);
 
         // Logout buttons
         const doLogout = async () => {
