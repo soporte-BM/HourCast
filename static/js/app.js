@@ -687,8 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.perfil_id = p.id;
                 }
                 const selectedStr = isSelected ? 'selected' : '';
-                const clpRate = p.tarifa_costo * state.valorUF;
-                optionsHtml += `<option value="${p.id}" ${selectedStr}>${escapeHtml(p.nombre)} (${formatCLP(clpRate)}/h - ${p.tarifa_costo.toFixed(2)} UF/h)</option>`;
+                optionsHtml += `<option value="${p.id}" ${selectedStr}>${escapeHtml(p.nombre)}</option>`;
             });
 
             tr.innerHTML = `
@@ -704,10 +703,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </td>
 
-                <!-- COL 2: Perfil de Costo en UF (0.5 - 2.5 UF/h) -->
+                <!-- COL 2: Perfil de Costo (Solo Lectura) -->
                 <td class="col-profile">
                     <div class="prof-input-wrap">
-                        <select class="form-select item-profile-select" data-uid="${item.uid}">
+                        <select class="form-select item-profile-select" data-uid="${item.uid}" disabled style="cursor: not-allowed; opacity: 0.85;" title="Perfil de costo asociado al profesional (solo lectura)">
                             ${optionsHtml}
                         </select>
                         <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem;">
