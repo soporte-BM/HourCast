@@ -604,9 +604,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update KPIs
         kpiTotalHours.textContent = `${sumHours.toFixed(1)} hrs`;
-        kpiTotalCost.innerHTML = `${formatCurrency(sumCost)} <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">(${sumCostUF.toFixed(2)} UF)</span>`;
-        kpiTotalUtility.innerHTML = `${formatCurrency(sumUtility)} <span style="font-size:0.85rem; color:var(--emerald); font-weight:normal;">(${sumUtilityUF.toFixed(2)} UF)</span>`;
-        kpiTotalPrice.innerHTML = `${formatCurrency(sumPrice)} <span style="font-size:0.85rem; color:var(--purple); font-weight:normal;">(${sumPriceUF.toFixed(2)} UF)</span>`;
+        kpiTotalCost.innerHTML = `${sumCostUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">(${formatCurrency(sumCost)})</span>`;
+        kpiTotalUtility.innerHTML = `${sumUtilityUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--emerald); font-weight:normal;">(${formatCurrency(sumUtility)})</span>`;
+        kpiTotalPrice.innerHTML = `${sumPriceUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--purple); font-weight:normal;">(${formatCurrency(sumPrice)})</span>`;
 
         const avgMargin = sumCost > 0 ? (sumUtility / sumCost) * 100 : state.margenGlobal;
         kpiMarginBadge.textContent = `Margen Prom: ${avgMargin.toFixed(1)}%`;
@@ -675,11 +675,10 @@ document.addEventListener('DOMContentLoaded', () => {
             profOptionsHtml += `<option value="__custom__" ${item.isEditingCustomName ? 'selected' : ''}>+ Escribir nuevo nombre...</option>`;
 
             // Construct Profile Select Options
-            let optionsHtml = `<option value="">-- Tarifas Predefinidas --</option>`;
+            let optionsHtml = `<option value="">-- Tarifas Predefinidas (UF) --</option>`;
             state.perfiles.forEach(p => {
                 const selected = item.perfil_id == p.id ? 'selected' : '';
-                const clpRate = p.tarifa_costo * state.valorUF;
-                optionsHtml += `<option value="${p.id}" ${selected}>${escapeHtml(p.nombre)} (${formatCurrency(clpRate)}/h - ${p.tarifa_costo.toFixed(2)} UF/h)</option>`;
+                optionsHtml += `<option value="${p.id}" ${selected}>${p.nombre} (${p.tarifa_costo.toFixed(2)} UF/h)</option>`;
             });
 
             tr.innerHTML = `
@@ -695,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </td>
 
-                <!-- COL 2: Perfil de Costo en UF/h y Pesos CLP/h -->
+                <!-- COL 2: Perfil de Costo en UF (0.5 - 2.5 UF/h) -->
                 <td class="col-profile">
                     <div class="prof-input-wrap">
                         <select class="form-select item-profile-select" data-uid="${item.uid}">
@@ -703,23 +702,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         </select>
                         <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem;">
                             <input type="number" class="form-input item-rate-input" data-uid="${item.uid}" value="${item.tarifa_costo}" step="0.05" min="0.1" max="5.0" style="padding:0.3rem 0.5rem; font-size:0.85rem; font-weight:600;" title="Tarifa por Hora en UF">
-                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">UF/h (${formatCurrency(item.tarifa_costo * state.valorUF)}/h)</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">UF/hora</span>
                         </div>
                     </div>
                 </td>
 
-                <!-- COL 3: Cálculo de Horas & Costo en Pesos CLP -->
+                <!-- COL 3: Cálculo de Horas Ingresadas (UF * Horas * UF_Actual) -->
                 <td class="col-hours">
                     <div class="prof-input-wrap">
                         <div style="display:flex; align-items:center; gap:0.4rem;">
                             <input type="number" class="form-input item-hours-input" data-uid="${item.uid}" value="${item.horas}" step="1" min="0" style="font-weight:700;">
                             <span style="font-size:0.85rem; color:var(--text-muted);">hrs</span>
                         </div>
-                        <span class="sub-cost-badge">Costo: ${formatCurrency(item.costo_total)} <span style="font-size:0.75rem; color:var(--text-muted);">(${(item.costo_total_uf || 0).toFixed(2)} UF)</span></span>
+                        <span class="sub-cost-badge">Costo: ${(item.costo_total_uf || 0).toFixed(2)} UF (${formatCurrency(item.costo_total)})</span>
                     </div>
                 </td>
 
-                <!-- COL 4: Cálculo de Utilidad & Precio Final en Pesos CLP -->
+                <!-- COL 4: Cálculo de Utilidad (10% - 20%) -->
                 <td class="col-utility">
                     <div class="utility-box">
                         <div class="row-margin-slider-wrap">
@@ -728,11 +727,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="utility-result-line">
                             <span>Utilidad:</span>
-                            <strong>${formatCurrency(item.monto_utilidad)} <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${(item.monto_utilidad_uf || 0).toFixed(2)} UF)</span></strong>
+                            <strong>${(item.monto_utilidad_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCurrency(item.monto_utilidad)})</span></strong>
                         </div>
                         <div class="utility-result-line price-result-line">
                             <span>Precio:</span>
-                            <strong>${formatCurrency(item.precio_venta)} <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${(item.precio_venta_uf || 0).toFixed(2)} UF)</span></strong>
+                            <strong>${(item.precio_venta_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCurrency(item.precio_venta)})</span></strong>
                         </div>
                     </div>
                 </td>
@@ -1100,7 +1099,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <tr>
                     <td style="text-align: left; font-weight: 600;">${escapeHtml(item.profesional || 'Profesional')}</td>
                     <td style="text-align: left; color: var(--text-muted);">${escapeHtml(item.perfil_nombre || 'Perfil')}</td>
-                    <td style="text-align: right; color: var(--emerald); font-weight: 700;">${formatCurrency(item.tarifa_costo * state.valorUF)}/h <span style="font-weight:400; font-size:0.78rem; color:var(--text-muted);">(${item.tarifa_costo.toFixed(2)} UF/h)</span></td>
+                    <td style="text-align: right; color: var(--emerald); font-weight: 700;">${item.tarifa_costo.toFixed(2)} UF/h</td>
                 </tr>
             `;
         });
@@ -1422,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.innerHTML = `
                 <div>
                     <strong>${escapeHtml(p.nombre)}</strong>
-                    <div style="font-size:0.8rem; color:var(--text-muted);">${formatCurrency(p.tarifa_costo * state.valorUF)} / hora (${p.tarifa_costo.toFixed(2)} UF/h) - ${escapeHtml(p.descripcion || '')}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">$${p.tarifa_costo.toFixed(2)} / hora - ${escapeHtml(p.descripcion || '')}</div>
                 </div>
                 <button class="btn-icon-danger btn-delete-profile" data-id="${p.id}">
                     <i class="fa-solid fa-trash-can"></i>
