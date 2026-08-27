@@ -604,9 +604,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update KPIs
         kpiTotalHours.textContent = `${sumHours.toFixed(1)} hrs`;
-        kpiTotalCost.innerHTML = `${sumCostUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">(${formatCurrency(sumCost)})</span>`;
-        kpiTotalUtility.innerHTML = `${sumUtilityUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--emerald); font-weight:normal;">(${formatCurrency(sumUtility)})</span>`;
-        kpiTotalPrice.innerHTML = `${sumPriceUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--purple); font-weight:normal;">(${formatCurrency(sumPrice)})</span>`;
+        kpiTotalCost.innerHTML = `${sumCostUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">(${formatCLP(sumCost)})</span>`;
+        kpiTotalUtility.innerHTML = `${sumUtilityUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--emerald); font-weight:normal;">(${formatCLP(sumUtility)})</span>`;
+        kpiTotalPrice.innerHTML = `${sumPriceUF.toFixed(2)} UF <span style="font-size:0.85rem; color:var(--purple); font-weight:normal;">(${formatCLP(sumPrice)})</span>`;
 
         const avgMargin = sumCost > 0 ? (sumUtility / sumCost) * 100 : state.margenGlobal;
         kpiMarginBadge.textContent = `Margen Prom: ${avgMargin.toFixed(1)}%`;
@@ -616,16 +616,20 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCharts(sumCost, sumUtility);
     }
 
+    function formatCLP(amount) {
+        const numStr = new Intl.NumberFormat('es-CL', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(Math.round(amount || 0));
+        return `$ ${numStr}`;
+    }
+
     function formatCurrency(amount) {
         const scale = parseFloat(state.unidadEscala) || 1;
         const scaledAmount = amount / scale;
 
         if (scale === 1) {
-            const numStr = new Intl.NumberFormat('es-CL', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(Math.round(scaledAmount));
-            return `$ ${numStr}`;
+            return formatCLP(amount);
         } else {
             let suffix = scale === 1000 ? ' Miles' : ' Millones';
             const numStr = new Intl.NumberFormat('es-CL', {
@@ -702,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </select>
                         <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem;">
                             <input type="number" class="form-input item-rate-input" data-uid="${item.uid}" value="${item.tarifa_costo}" step="0.05" min="0.1" max="5.0" style="padding:0.3rem 0.5rem; font-size:0.85rem; font-weight:600;" title="Tarifa por Hora en UF">
-                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">UF/hora</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">UF/hora (${formatCLP(item.tarifa_costo * state.valorUF)}/h)</span>
                         </div>
                     </div>
                 </td>
@@ -714,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <input type="number" class="form-input item-hours-input" data-uid="${item.uid}" value="${item.horas}" step="1" min="0" style="font-weight:700;">
                             <span style="font-size:0.85rem; color:var(--text-muted);">hrs</span>
                         </div>
-                        <span class="sub-cost-badge">Costo: ${(item.costo_total_uf || 0).toFixed(2)} UF (${formatCurrency(item.costo_total)})</span>
+                        <span class="sub-cost-badge">Costo: ${(item.costo_total_uf || 0).toFixed(2)} UF (${formatCLP(item.costo_total)})</span>
                     </div>
                 </td>
 
@@ -727,11 +731,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="utility-result-line">
                             <span>Utilidad:</span>
-                            <strong>${(item.monto_utilidad_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCurrency(item.monto_utilidad)})</span></strong>
+                            <strong>${(item.monto_utilidad_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCLP(item.monto_utilidad)})</span></strong>
                         </div>
                         <div class="utility-result-line price-result-line">
                             <span>Precio:</span>
-                            <strong>${(item.precio_venta_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCurrency(item.precio_venta)})</span></strong>
+                            <strong>${(item.precio_venta_uf || 0).toFixed(2)} UF <span style="font-weight:normal; font-size:0.75rem; color:var(--text-muted);">(${formatCLP(item.precio_venta)})</span></strong>
                         </div>
                     </div>
                 </td>
