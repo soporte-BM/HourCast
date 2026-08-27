@@ -16,7 +16,7 @@
     <!-- Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.6.5">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.7.4">
 </head>
 
 <body>
@@ -231,7 +231,8 @@
                         <button class="btn btn-outline" id="btn-clear-items">
                             <i class="fa-solid fa-trash-can"></i> Limpiar
                         </button>
-                        <button class="btn btn-primary" id="btn-add-professional">
+                        <button class="btn btn-primary" id="btn-add-professional"
+                            onclick="if(window.populateAddProfessionalModal) window.populateAddProfessionalModal(); const m=document.getElementById('modal-add-professional'); if(m) m.classList.add('active');">
                             <i class="fa-solid fa-user-plus"></i> Agregar Profesional
                         </button>
                     </div>
@@ -262,7 +263,8 @@
                 <!-- Mobile View Indicator/Card Footer -->
                 <div class="table-footer-summary">
                     <span id="item-count-label">0 Profesionales en la proyección</span>
-                    <button class="btn btn-primary btn-block-mobile" id="btn-add-professional-mobile">
+                    <button class="btn btn-primary btn-block-mobile" id="btn-add-professional-mobile"
+                        onclick="if(window.populateAddProfessionalModal) window.populateAddProfessionalModal(); const m=document.getElementById('modal-add-professional'); if(m) m.classList.add('active');">
                         <i class="fa-solid fa-user-plus"></i> Agregar Profesional
                     </button>
                 </div>
@@ -601,7 +603,7 @@
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.7.3"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.7.4"></script>
 </body>
 
 </html>
