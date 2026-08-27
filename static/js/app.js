@@ -680,15 +680,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Construct Profile Select Options
             let optionsHtml = `<option value="">-- Seleccionar Perfil de Costo --</option>`;
+            let profileMatchedInCatalog = false;
+
             state.perfiles.forEach(p => {
                 const isSelected = (item.perfil_id && item.perfil_id == p.id) || 
-                                   (item.perfil_nombre && item.perfil_nombre.toLowerCase() === p.nombre.toLowerCase());
+                                   (item.perfil_nombre && item.perfil_nombre.trim().toLowerCase() === p.nombre.trim().toLowerCase());
                 if (isSelected) {
                     item.perfil_id = p.id;
+                    item.perfil_nombre = p.nombre;
+                    profileMatchedInCatalog = true;
                 }
                 const selectedStr = isSelected ? 'selected' : '';
                 optionsHtml += `<option value="${p.id}" ${selectedStr}>${escapeHtml(p.nombre)}</option>`;
             });
+
+            if (!profileMatchedInCatalog && item.perfil_nombre && item.perfil_nombre !== '') {
+                optionsHtml += `<option value="${escapeHtml(item.perfil_nombre)}" selected>${escapeHtml(item.perfil_nombre)}</option>`;
+            }
 
             tr.innerHTML = `
                 <td class="col-num">${index + 1}</td>
