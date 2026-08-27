@@ -569,9 +569,9 @@ document.addEventListener('DOMContentLoaded', () => {
             item.costo_total_uf = item.horas * item.tarifa_costo;
             item.costo_total = item.costo_total_uf * currentUF;
 
-            // Enforce margin between 10% and 20%
+            // Enforce margin between 10% and 50%
             if (item.margen_porcentaje < 10.0) item.margen_porcentaje = 10.0;
-            if (item.margen_porcentaje > 20.0) item.margen_porcentaje = 20.0;
+            if (item.margen_porcentaje > 50.0) item.margen_porcentaje = 50.0;
 
             const marginDecimal = item.margen_porcentaje / 100.0;
 
@@ -727,11 +727,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </td>
 
-                <!-- COL 4: Cálculo de Utilidad (10% - 20%) -->
+                <!-- COL 4: Cálculo de Utilidad (10% - 50%) -->
                 <td class="col-utility">
                     <div class="utility-box">
                         <div class="row-margin-slider-wrap">
-                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="20" step="0.5" value="${item.margen_porcentaje}">
+                            <input type="range" class="margin-range-slider item-margin-slider" data-uid="${item.uid}" min="10" max="50" step="0.5" value="${item.margen_porcentaje}">
                             <span class="row-margin-val">${item.margen_porcentaje.toFixed(1)}%</span>
                         </div>
                         <div class="utility-result-line">
@@ -1509,7 +1509,7 @@ document.addEventListener('DOMContentLoaded', () => {
         compareChart = new Chart(ctxCompare, {
             type: 'line',
             data: {
-                labels: ['10% Utilidad', '12.5% Utilidad', '15.0% (Base)', '17.5% Utilidad', '20.0% Utilidad'],
+                labels: ['10% Utilidad', '20% Utilidad', '30% (Intermedio)', '40% Utilidad', '50% Utilidad'],
                 datasets: [{
                     label: 'Precio al Cliente ($)',
                     data: [0, 0, 0, 0, 0],
@@ -1550,8 +1550,8 @@ document.addEventListener('DOMContentLoaded', () => {
         distChart.data.datasets[1].data = state.items.map(i => i.monto_utilidad / scale);
         distChart.update();
 
-        // Chart 2: Scenario comparison across 10% - 20%
-        const marginSteps = [10.0, 12.5, 15.0, 17.5, 20.0];
+        // Chart 2: Scenario comparison across 10% - 50%
+        const marginSteps = [10.0, 20.0, 30.0, 40.0, 50.0];
         const scenarioPrices = marginSteps.map(m => {
             const dec = m / 100.0;
             let price = 0;
