@@ -1,0 +1,25 @@
+# Ignorar base de datos local SQLite para no sobrescribir la produccion en Render
+*.db
+*.sqlite
+*.sqlite3
+proyectabm.db
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+
+# Variables de entorno locales
+.env
+.env.local
+
+# Archivos y carpetas de prueba / IDE
+.vscode/
+.idea/
+scratch/

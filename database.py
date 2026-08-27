@@ -3,11 +3,14 @@ import os
 import json
 
 DB_DIR = os.path.dirname(__file__)
-DB_FILE = os.path.join(DB_DIR, 'proyectabm.db')
+ENV_DB_PATH = os.environ.get('DATABASE_PATH')
 
-# Fallback a /tmp solo si el directorio del proyecto no permite escritura
-if not os.access(DB_DIR, os.W_OK) and os.path.exists('/tmp') and os.access('/tmp', os.W_OK):
+if ENV_DB_PATH:
+    DB_FILE = ENV_DB_PATH
+elif not os.access(DB_DIR, os.W_OK) and os.path.exists('/tmp') and os.access('/tmp', os.W_OK):
     DB_FILE = '/tmp/proyectabm.db'
+else:
+    DB_FILE = os.path.join(DB_DIR, 'proyectabm.db')
 
 def get_connection():
     conn = sqlite3.connect(DB_FILE)
