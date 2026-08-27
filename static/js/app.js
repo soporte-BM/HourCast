@@ -1117,20 +1117,111 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
         // Add professional buttons
-        const handleAdd = () => {
-            const defaultProfile = state.perfiles[0] || {};
-            state.items.push(createItemObject(
-                '',
-                defaultProfile.id || null,
-                defaultProfile.nombre || 'Personalizado',
-                defaultProfile.tarifa_costo || 1.0,
-                10
-            ));
+    function populateAddProfessionalModal() {
+        const modalAdd = document.getElementById('modal-add-professional');
+        const selProf = document.getElementById('add-prof-select');
+        const inpCustomName = document.getElementById('add-prof-custom-name');
+        const groupCustom = document.getElementById('group-add-custom-name');
+        const inpRate = document.getElementById('add-prof-rate');
+        const inpHours = document.getElementById('add-prof-hours');
+        const inpMargin = document.getElementById('add-prof-margin');
+
+        if (!modalAdd || !selProf) return;
+
+        updateProfesionalesListaFromDatabase();
+
+        let html = '<option value="">-- Seleccionar Profesional / Perfil --</option>';
+        state.profesionalesLista.forEach(p => {
+            html += `<option value="${escapeHtml(p.nombre)}" data-rate="${p.tarifa || 1.0}" data-perfil="${escapeHtml(p.perfil || p.nombre)}">${escapeHtml(p.nombre)} (${escapeHtml(p.perfil || p.nombre)})</option>`;
+        });
+        html += '<option value="__custom__">+ Escribir nuevo nombre personalizado...</option>';
+        selProf.innerHTML = html;
+
+        if (groupCustom) groupCustom.style.display = 'none';
+        if (inpCustomName) inpCustomName.value = '';
+        if (inpRate) inpRate.value = state.profesionalesLista.length > 0 ? state.profesionalesLista[0].tarifa : 1.0;
+        if (inpHours) inpHours.value = 10;
+        if (inpMargin) inpMargin.value = parseFloat(state.margenGlobal || 15.0).toFixed(1);
+
+        modalAdd.classList.add('active');
+    }
+    window.populateAddProfessionalModal = populateAddProfessionalModal;
+
+    const handleAdd = () => {
+        populateAddProfessionalModal();
+    };
+    btnAddProfessional.addEventListener('click', handleAdd);
+    btnAddProfessionalMobile.addEventListener('click', handleAdd);
+
+    const addProfSelect = document.getElementById('add-prof-select');
+    if (addProfSelect) {
+        addProfSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            const groupCustom = document.getElementById('group-add-custom-name');
+            const inpRate = document.getElementById('add-prof-rate');
+            if (val === '__custom__') {
+                if (groupCustom) groupCustom.style.display = 'block';
+            } else {
+                if (groupCustom) groupCustom.style.display = 'none';
+                const foundProf = state.profesionalesLista.find(p => p.nombre.toLowerCase() === val.toLowerCase());
+                if (foundProf && inpRate) {
+                    inpRate.value = foundProf.tarifa || 1.0;
+                }
+            }
+        });
+    }
+
+    const btnSubmitAddModal = document.getElementById('btn-submit-add-professional-modal');
+    if (btnSubmitAddModal) {
+        btnSubmitAddModal.addEventListener('click', () => {
+            const selProf = document.getElementById('add-prof-select');
+            const inpCustomName = document.getElementById('add-prof-custom-name');
+            const inpRate = document.getElementById('add-prof-rate');
+            const inpHours = document.getElementById('add-prof-hours');
+            const inpMargin = document.getElementById('add-prof-margin');
+
+            let profName = '';
+            let perfilNombre = 'Personalizado';
+            let perfilId = null;
+
+            if (!selProf) return;
+
+            const selectedVal = selProf.value;
+            if (selectedVal === '__custom__') {
+                profName = inpCustomName ? inpCustomName.value.trim() : '';
+                if (!profName) {
+                    showToast('Ingresa un nombre para el profesional personalizado', 'error');
+                    return;
+                }
+            } else if (selectedVal !== '') {
+                profName = selectedVal;
+                const foundProf = state.profesionalesLista.find(p => p.nombre.toLowerCase() === selectedVal.toLowerCase());
+                if (foundProf) {
+                    perfilNombre = foundProf.perfil || foundProf.nombre;
+                    const matchDB = state.perfiles.find(p => p.nombre.toLowerCase() === perfilNombre.toLowerCase());
+                    if (matchDB) perfilId = matchDB.id;
+                }
+            } else {
+                showToast('Selecciona un profesional o escribe uno nuevo', 'error');
+                return;
+            }
+
+            const tarifa = parseFloat(inpRate ? inpRate.value : 1.0) || 1.0;
+            const horas = parseFloat(inpHours ? inpHours.value : 10) || 10;
+            const margen = parseFloat(inpMargin ? inpMargin.value : state.margenGlobal) || state.margenGlobal;
+
+            const newItem = createItemObject(profName, perfilId, perfilNombre, tarifa, horas);
+            newItem.margen_porcentaje = margen;
+            state.items.push(newItem);
+
             render();
-            showToast('Nuevo profesional agregado', 'success');
-        };
-        btnAddProfessional.addEventListener('click', handleAdd);
-        btnAddProfessionalMobile.addEventListener('click', handleAdd);
+
+            const modalAdd = document.getElementById('modal-add-professional');
+            if (modalAdd) modalAdd.classList.remove('active');
+
+            showToast(`Profesional "${profName}" agregado a la proyección`, 'success');
+        });
+    }
 
         // Clear items
         btnClearItems.addEventListener('click', () => {

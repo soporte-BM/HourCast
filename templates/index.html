@@ -538,13 +538,70 @@
                         </button>
                     </div>
                 </div>
+            <!-- MODAL: AGREGAR PROFESIONAL FORM -->
+            <div class="modal-backdrop" id="modal-add-professional">
+                <div class="modal-box glass-card" style="max-width: 540px;">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-user-plus" style="color:var(--primary);"></i> Agregar Profesional a la Proyección</h3>
+                        <button class="modal-close close-modal" onclick="const m=document.getElementById('modal-add-professional'); if(m) m.classList.remove('active');">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form-add-professional-modal" onsubmit="return false;">
+                            <div class="form-group" style="margin-bottom: 1.2rem;">
+                                <label for="add-prof-select" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fa-solid fa-user-tie" style="color: var(--primary);"></i> Seleccionar Profesional / Perfil
+                                </label>
+                                <select id="add-prof-select" class="form-select">
+                                    <!-- Populated dynamically via JS -->
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="group-add-custom-name" style="margin-bottom: 1.2rem; display: none;">
+                                <label for="add-prof-custom-name" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fa-solid fa-signature" style="color: var(--primary);"></i> Nombre del Profesional Personalizado
+                                </label>
+                                <input type="text" id="add-prof-custom-name" class="form-input" placeholder="Ej: Juan Pérez">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+                                <div class="form-group">
+                                    <label for="add-prof-rate" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fa-solid fa-coins" style="color: var(--emerald);"></i> Tarifa (UF/hora)
+                                    </label>
+                                    <input type="number" id="add-prof-rate" class="form-input" step="0.05" min="0.1" value="1.0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="add-prof-hours" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                        <i class="fa-solid fa-clock" style="color: var(--primary);"></i> Horas a Proyectar
+                                    </label>
+                                    <input type="number" id="add-prof-hours" class="form-input" step="1" min="1" value="10">
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label for="add-prof-margin" style="font-weight: 600; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                                    <i class="fa-solid fa-percent" style="color: var(--purple);"></i> Margen de Utilidad (%)
+                                </label>
+                                <input type="number" id="add-prof-margin" class="form-input" step="0.5" min="5" max="50" value="15.0">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer" style="justify-content: flex-end; gap: 0.75rem;">
+                        <button class="btn btn-secondary close-modal" onclick="const m=document.getElementById('modal-add-professional'); if(m) m.classList.remove('active');">
+                            Cancelar
+                        </button>
+                        <button class="btn btn-primary" id="btn-submit-add-professional-modal">
+                            <i class="fa-solid fa-check"></i> Agregar a la Proyección
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- TOAST NOTIFICATION CONTAINER -->
             <div id="toast-container" class="toast-container"></div>
 
             <!-- Custom JS -->
-            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.7.2"></script>
+            <script src="{{ url_for('static', filename='js/app.js') }}?v=1.7.3"></script>
 </body>
 
 </html>
